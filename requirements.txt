@@ -1,5 +1,6 @@
 beautifulsoup4
 ipykernel
+matplotlib
 nbformat>=4.2
 numpy
 pandas
