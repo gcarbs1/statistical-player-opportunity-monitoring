@@ -1,0 +1,42 @@
+# Statistical Player Opportunity Monitoring
+
+Analysis of competitive opportunity among young professional football players,
+using round-level minutes to identify unusual and persistent patterns relative
+to age and league context.
+
+## Structure
+
+- `index.html`: static exploratory website.
+- `assets/`: data used by the website.
+- `notebooks/`: data collection, processing, and opportunity signal construction.
+- `data/raw/`: source tables, HTTP cache, and collection checkpoints.
+- `data/processed/`: normalized observations, trajectories, and analytical outputs.
+
+## Pipeline
+
+Run the notebooks in order:
+
+1. `00_data_collection.ipynb`
+2. `01_data_processing.ipynb`
+3. `02_opportunity_signals.ipynb`
+
+The collection notebook updates completed and active seasons incrementally. The
+processing notebook builds player observations by match and league round. The
+final notebook calculates exploratory EWMA and CUSUM signals and updates the
+JSON asset consumed by the website.
+
+## Local use
+
+The project uses Python 3.12. Create the environment and install the declared
+dependencies:
+
+```bash
+python3.12 -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt
+```
+
+After running the notebooks, serve the website from the repository root:
+
+```bash
+.venv/bin/python -m http.server 8765
+```

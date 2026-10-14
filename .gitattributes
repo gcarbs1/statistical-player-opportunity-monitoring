@@ -1,0 +1,10 @@
+* text=auto eol=lf
+
+*.ipynb text eol=lf
+*.html text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.parquet binary
+
+# Keep the website dataset in Git without rendering a large textual diff.
+assets/*.json -diff

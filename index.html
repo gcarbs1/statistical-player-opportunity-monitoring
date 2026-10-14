@@ -1,0 +1,725 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f5f5f1">
+<title>Statistical Player Opportunity Monitoring</title>
+<meta name="description" content="Estudo longitudinal da oportunidade competitiva de jogadores entre 16 e 23 anos em 16 ligas nacionais.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f5f5f1'/%3E%3Cpath d='M6 25V7h5l5 9 5-9h5v18h-4V14l-6 10-6-10v11z' fill='%23181918'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f5f5f1;--surface:#fbfbf8;--ink:#181918;--muted:#666963;--faint:#92958e;
+  --line:#d5d7d0;--line-dark:#afb2aa;--accent:#245aa6;--sans:"Inter",Arial,sans-serif;
+  --serif:"Source Serif 4",Georgia,serif;--mono:"DM Mono",monospace
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.55 var(--sans);-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:inherit}
+h1,h2,h3,p{margin:0}
+.shell{width:min(1240px,calc(100% - 48px));margin-inline:auto}
+.reading{width:min(900px,calc(100% - 48px));margin-inline:auto}
+.mono{font-family:var(--mono)}
+.site-head{height:58px;border-bottom:1px solid var(--line)}
+.site-head .shell{height:100%;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.brand{font-weight:600;letter-spacing:-.02em;text-decoration:none}
+.site-nav{display:flex;align-items:center;gap:24px;font-size:12px;color:var(--muted)}
+.site-nav a{text-decoration:none}
+.site-nav a:hover{color:var(--ink)}
+.intro{padding:68px 0 54px}
+.kicker{font:500 10px var(--mono);letter-spacing:.11em;text-transform:uppercase;color:var(--accent)}
+.intro h1{font:500 clamp(40px,5.4vw,66px)/1.02 var(--serif);letter-spacing:-.035em;max-width:880px;margin-top:14px}
+.abstract{display:grid;grid-template-columns:1fr 1fr;gap:48px;margin-top:34px;padding-top:22px;border-top:1px solid var(--line)}
+.abstract p{font-size:14px;line-height:1.75;color:var(--muted)}
+.abstract p:first-child{color:var(--ink)}
+.study-section{padding:70px 0;border-top:1px solid var(--line)}
+.section-head{display:grid;grid-template-columns:110px minmax(0,650px) 1fr;gap:26px;align-items:start;margin-bottom:32px}
+.section-number{font:500 11px var(--mono);letter-spacing:.08em;color:var(--accent)}
+.section-head h2{font:500 clamp(30px,4vw,44px)/1.08 var(--serif);letter-spacing:-.025em}
+.section-head p{font-size:13px;line-height:1.7;color:var(--muted);max-width:44ch;padding-top:6px}
+.figure{background:var(--surface);border:1px solid var(--line)}
+.figure-tools{display:grid;grid-template-columns:repeat(3,minmax(140px,210px)) 1fr;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line);align-items:end}
+.field label{display:block;margin:0 0 6px;font:400 10px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.field select,.field input{width:100%;height:38px;border:1px solid var(--line);background:transparent;padding:0 10px;border-radius:0;outline:none;font-size:12px}
+.field select:focus,.field input:focus{border-color:var(--accent)}
+.figure-count{justify-self:end;align-self:center;font:400 10px var(--mono);text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.plot-wrap{position:relative;height:590px;padding:18px 18px 8px}
+.plot-wrap canvas{display:block;width:100%;height:100%;cursor:crosshair}
+.tooltip{display:none;position:absolute;z-index:5;pointer-events:none;transform:translate(-50%,calc(-100% - 10px));padding:9px 11px;background:var(--ink);color:white;font-size:11px;line-height:1.55;white-space:nowrap}
+.tooltip b{font-weight:600}
+.figure-foot{display:flex;justify-content:space-between;gap:24px;padding:12px 16px;border-top:1px solid var(--line)}
+.legend{display:flex;gap:8px 15px;flex-wrap:wrap}
+.legend span{display:flex;align-items:center;gap:5px;font:400 10px var(--mono);text-transform:uppercase;color:var(--muted)}
+.legend i{display:block;width:6px;height:6px;border-radius:50%}
+.figure-note{font-size:11px;line-height:1.55;color:var(--muted);text-align:right;max-width:430px}
+.selected-note{min-height:18px;margin-top:12px;font:400 11px var(--mono);color:var(--muted)}
+.selected-note a{color:var(--accent);text-underline-offset:3px}
+.player-find{position:relative;max-width:520px;margin-bottom:28px}
+.player-find input{width:100%;height:43px;background:transparent;border:0;border-bottom:1px solid var(--line-dark);outline:none;padding:0 34px 0 0;font-size:14px}
+.player-find input:focus{border-color:var(--accent)}
+.player-find::after{content:"⌕";position:absolute;right:5px;top:8px;color:var(--muted);font-size:19px;pointer-events:none}
+.search-results{display:none;position:absolute;z-index:10;left:0;right:0;top:48px;background:var(--surface);border:1px solid var(--line);max-height:320px;overflow:auto}
+.search-results.open{display:block}
+.search-row{width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;border:0;border-bottom:1px solid var(--line);background:transparent;text-align:left;padding:10px 12px}
+.search-row:last-child{border-bottom:0}
+.search-row:hover,.search-row:focus-visible{background:#eeeeea;outline:0}
+.search-row strong{display:block;font-size:12px}
+.search-row span{display:block;font-size:10px;color:var(--muted);margin-top:2px}
+.search-row code{font:400 10px var(--mono);color:var(--accent)}
+.profile{display:none}
+.profile.visible{display:block}
+.profile-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:28px;align-items:start;padding:24px 0 22px;border-top:1px solid var(--line)}
+.profile-head h3{font:500 clamp(30px,4vw,45px)/1 var(--serif);letter-spacing:-.025em}
+.profile-meta{margin-top:8px;font-size:12px;color:var(--muted)}
+.profile-context{margin-top:12px;font:400 10px/1.6 var(--mono);color:var(--muted)}
+.signal-score{text-align:right}
+.signal-score strong{display:block;font:500 42px/1 var(--serif)}
+.signal-score span{font:400 10px var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.metric{padding:15px 16px;border-right:1px solid var(--line)}
+.metric:first-child{padding-left:0}
+.metric:last-child{border-right:0}
+.metric strong{display:block;font:500 22px/1.1 var(--serif)}
+.metric span{display:block;margin-top:5px;font:400 10px/1.45 var(--mono);text-transform:uppercase;letter-spacing:.03em;color:var(--muted)}
+.trajectory-head{display:flex;justify-content:space-between;gap:24px;align-items:end;margin:28px 0 10px}
+.trajectory-head h3{font-size:13px;font-weight:600}
+.trajectory-head p{font-size:10px;color:var(--muted)}
+.trajectory-wrap{height:390px;position:relative;background:var(--surface);border:1px solid var(--line)}
+.trajectory-wrap svg{display:block;width:100%;height:100%}
+.moves{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.move{padding:6px 8px;border:1px solid var(--line);font-size:10px;color:var(--muted)}
+.move b{color:var(--ink);font-weight:500}
+.empty-profile{padding:48px 0;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+.method-grid{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line)}
+.method-item{padding:22px 26px 0 0;border-right:1px solid var(--line);min-height:170px}
+.method-item+.method-item{padding-left:26px}
+.method-item:last-child{border-right:0}
+.method-item code{font:500 10px var(--mono);color:var(--accent)}
+.method-item h3{font-size:13px;margin-top:15px}
+.method-item p{font-size:12px;line-height:1.75;color:var(--muted);margin-top:7px}
+.definition{margin-top:32px;padding:18px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:12px;line-height:1.75;color:var(--muted)}
+.definition strong{color:var(--ink)}
+.references{padding:54px 0;border-top:1px solid var(--line)}
+.references-head{display:grid;grid-template-columns:110px 1fr;gap:26px;margin-bottom:20px}
+.references h2{font:500 28px/1.1 var(--serif)}
+.reference-list{margin-left:136px;border-top:1px solid var(--line)}
+.reference{display:grid;grid-template-columns:74px minmax(0,1fr);gap:18px;padding:11px 0;border-bottom:1px solid var(--line)}
+.reference code{font:400 10px var(--mono);color:var(--muted)}
+.reference a{font-size:12px;text-decoration:none}
+.reference a:hover{text-decoration:underline;text-underline-offset:3px}
+.site-foot{padding:24px 0 38px;border-top:1px solid var(--line)}
+.site-foot .shell{display:flex;justify-content:space-between;gap:30px;font:400 10px/1.6 var(--mono);color:var(--muted)}
+@media(max-width:900px){
+  .section-head{grid-template-columns:70px 1fr}.section-head p{grid-column:2}
+  .figure-tools{grid-template-columns:1fr 1fr}.figure-count{justify-self:start}
+  .plot-wrap{height:500px}.method-grid{grid-template-columns:1fr}
+  .method-item,.method-item+.method-item{padding:18px 0;border-right:0;border-bottom:1px solid var(--line);min-height:0}
+}
+@media(max-width:640px){
+  .shell,.reading{width:min(100% - 28px,1240px)}.site-nav a{display:none}
+  .intro{padding:48px 0 38px}.abstract{grid-template-columns:1fr;gap:14px}
+  .study-section{padding:52px 0}.section-head{grid-template-columns:1fr;gap:9px}.section-head p{grid-column:1}
+  .figure-tools{grid-template-columns:1fr}.plot-wrap{height:460px;padding:10px 8px 4px}
+  .figure-foot{flex-direction:column}.figure-note{text-align:left}
+  .profile-head{grid-template-columns:1fr}.signal-score{text-align:left}
+  .metrics{grid-template-columns:1fr 1fr}.metric:nth-child(2){border-right:0}.metric:nth-child(-n+2){border-bottom:1px solid var(--line)}
+  .trajectory-wrap{height:330px}.references-head{grid-template-columns:1fr}.reference-list{margin-left:0}
+  .site-foot .shell{flex-direction:column}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header class="site-head">
+  <div class="shell">
+    <a class="brand" href="#top">Statistical Player Opportunity Monitoring</a>
+    <nav class="site-nav" aria-label="Navegação principal">
+      <a href="#distribution">Distribuição</a>
+      <a href="#player">Jogador</a>
+      <a href="#monitor">Monitor</a>
+      <a href="#method">Método</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="intro">
+    <div class="reading">
+      <div class="kicker">Estudo longitudinal · futebol profissional</div>
+      <h1>Minutagem e oportunidade entre jogadores de 16 a 23 anos</h1>
+      <div class="abstract">
+        <p>Descrição da oportunidade competitiva de jovens em 16 primeiras divisões. A unidade de análise é o jogador por rodada. O sinal resume a persistência de minutagens incomuns para a idade e o contexto competitivo.</p>
+        <p>O indicador representa oportunidade observada, associada às decisões de seleção das comissões técnicas. Não é uma medida direta de desempenho, potencial ou probabilidade de sucesso futuro.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="study-section" id="distribution">
+    <div class="shell">
+      <div class="section-head">
+        <div class="section-number">FIGURA 01</div>
+        <h2>Distribuição entre idade e oportunidade</h2>
+        <p>Cada ponto representa um jogador. A posição horizontal indica a idade no maior sinal persistente. A posição vertical indica o valor máximo da EWMA padronizada. Selecione um ponto para consultar sua trajetória.</p>
+      </div>
+
+      <figure class="figure">
+        <div class="figure-tools">
+          <div class="field">
+            <label for="leagueFilter">Liga no maior sinal</label>
+            <select id="leagueFilter"><option value="">Todas as ligas</option></select>
+          </div>
+          <div class="field">
+            <label for="positionFilter">Posição</label>
+            <select id="positionFilter">
+              <option value="">Todas as posições</option>
+              <option value="Goalkeeper">Goleiro</option>
+              <option value="Defender">Defensor</option>
+              <option value="Midfield">Meio-campo</option>
+              <option value="Attack">Ataque</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="scoreFilter">Percentil mínimo</label>
+            <select id="scoreFilter">
+              <option value="0">Todos</option>
+              <option value="75">75</option>
+              <option value="90">90</option>
+              <option value="95">95</option>
+              <option value="99">99</option>
+            </select>
+          </div>
+          <div class="figure-count" id="figureCount"></div>
+        </div>
+        <div class="plot-wrap" id="plotWrap">
+          <canvas id="signalPlot" role="img" aria-label="Dispersão dos jogadores por idade e maior EWMA de oportunidade"></canvas>
+          <div class="tooltip" id="plotTip"></div>
+        </div>
+        <figcaption class="figure-foot">
+          <div class="legend" id="legend"></div>
+          <div class="figure-note">Amostra do gráfico: jogadores com ao menos oito rodadas observadas e sinal calculado após a quinta observação no período de liga.</div>
+        </figcaption>
+      </figure>
+      <div class="selected-note" id="selectedNote">Clique em um ponto para abrir a trajetória individual.</div>
+    </div>
+  </section>
+
+  <section class="study-section" id="player">
+    <div class="shell">
+      <div class="section-head">
+        <div class="section-number">FIGURA 02</div>
+        <h2>Trajetória individual</h2>
+        <p>A linha representa a EWMA do desvio de oportunidade. As barras representam os minutos em cada rodada. Mudanças de cor indicam mudança de liga.</p>
+      </div>
+
+      <div class="player-find">
+        <label class="kicker" for="playerSearch">Localizar jogador</label>
+        <input id="playerSearch" type="search" autocomplete="off" placeholder="Nome do jogador ou clube">
+        <div class="search-results" id="searchResults"></div>
+      </div>
+
+      <div class="empty-profile" id="emptyProfile">Selecione um jogador na distribuição ou utilize a busca.</div>
+      <article class="profile" id="profile" aria-live="polite"></article>
+    </div>
+  </section>
+
+  <section class="study-section" id="monitor">
+    <div class="shell">
+      <div class="section-head">
+        <div class="section-number">FIGURA 03</div>
+        <h2>Utilização anterior × utilização recente</h2>
+        <p>Cada ponto compara a proporção histórica de minutos do jogador com as cinco decisões mais recentes. Pontos abaixo da diagonal indicam redução de utilização. Transferências não reiniciam a sequência.</p>
+      </div>
+
+      <figure class="figure">
+        <div class="figure-tools">
+          <div class="field">
+            <label for="monitorLeague">Liga atual observada</label>
+            <select id="monitorLeague"><option value="">Todas as ligas</option></select>
+          </div>
+          <div class="field">
+            <label for="monitorPosition">Posição</label>
+            <select id="monitorPosition">
+              <option value="">Todas as posições</option>
+              <option value="Goalkeeper">Goleiro</option>
+              <option value="Defender">Defensor</option>
+              <option value="Midfield">Meio-campo</option>
+              <option value="Attack">Ataque</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="monitorThreshold">Percentil mínimo do sinal</label>
+            <select id="monitorThreshold">
+              <option value="0">Todos</option>
+              <option value="75">75</option>
+              <option value="90">90</option>
+              <option value="95">95</option>
+              <option value="99">99</option>
+            </select>
+          </div>
+          <div class="figure-count" id="monitorCount"></div>
+        </div>
+        <div class="plot-wrap" id="usagePlotWrap">
+          <canvas id="usagePlot" role="img" aria-label="Dispersão da utilização anterior e recente dos jogadores"></canvas>
+          <div class="tooltip" id="usagePlotTip"></div>
+        </div>
+        <figcaption class="figure-foot">
+          <div class="legend" id="usageLegend"></div>
+          <div class="figure-note">A utilização anterior agrega todas as decisões anteriores às cinco mais recentes. A amostra exige ao menos oito decisões históricas, cinco recentes e observação nos últimos 60 dias. Lesões e ausências são excluídas.</div>
+        </figcaption>
+      </figure>
+      <div class="selected-note" id="usageSelectedNote">Clique em um ponto para abrir a trajetória individual.</div>
+    </div>
+  </section>
+
+  <section class="study-section" id="method">
+    <div class="reading">
+      <div class="section-head">
+        <div class="section-number">MÉTODO</div>
+        <h2>Definição do sinal</h2>
+        <p>Esta é uma estatística exploratória e retrospectiva. O modelo confirmatório e os limites de controle ainda serão estimados e avaliados fora da amostra.</p>
+      </div>
+      <div class="method-grid">
+        <div class="method-item">
+          <code>01 · REFERÊNCIA</code>
+          <h3>Percentil por rodada</h3>
+          <p>A minutagem de cada jogador é posicionada na distribuição da respectiva liga, temporada e rodada. Atletas de todas as idades compõem essa referência.</p>
+        </div>
+        <div class="method-item">
+          <code>02 · PADRONIZAÇÃO</code>
+          <h3>Comparação por idade</h3>
+          <p>O percentil é padronizado entre jogadores da mesma idade inteira, liga e temporada. O resultado descreve o desvio em relação aos pares etários.</p>
+        </div>
+        <div class="method-item">
+          <code>03 · PERSISTÊNCIA</code>
+          <h3>EWMA por período de liga</h3>
+          <p>A EWMA usa α = 0,25 e reinicia a cada mudança de liga. O percentil final ordena o maior valor individual entre jogadores elegíveis.</p>
+        </div>
+      </div>
+      <div class="definition">
+        <strong>Interpretação.</strong> Um valor elevado indica que o jogador recebeu minutos acima do padrão de seus pares de forma persistente. Não implica superioridade técnica. Lesões, ausências e registros por outro clube são excluídos do universo de decisões. Estar disponível e não jogar permanece como zero minuto.
+      </div>
+    </div>
+  </section>
+
+  <section class="references" id="references">
+    <div class="reading">
+      <div class="references-head">
+        <div class="section-number">REFERÊNCIAS</div>
+        <h2>Base metodológica</h2>
+      </div>
+      <div class="reference-list">
+        <div class="reference"><code>TRI · 01</code><a href="https://doi.org/10.1214/12-AOAS608" target="_blank" rel="noreferrer">Wang, Berger &amp; Burdick (2013). Dynamic Item Response Models.</a></div>
+        <div class="reference"><code>TRI · 02</code><a href="https://doi.org/10.18637/jss.v039.i12" target="_blank" rel="noreferrer">De Boeck et al. (2011). The Estimation of Item Response Models with the lmer Function from the lme4 Package in R.</a></div>
+        <div class="reference"><code>TRI · 03</code><a href="https://doi.org/10.1016/j.ymeth.2022.01.005" target="_blank" rel="noreferrer">Proust-Lima et al. (2022). Item response theory models for continuous-time longitudinal processes.</a></div>
+        <div class="reference"><code>CEP · 01</code><a href="https://doi.org/10.1198/016214506000001121" target="_blank" rel="noreferrer">Grigg &amp; Spiegelhalter (2007). A Simple Risk-Adjusted Exponentially Weighted Moving Average.</a></div>
+        <div class="reference"><code>CEP · 02</code><a href="https://doi.org/10.1093/biostatistics/1.4.441" target="_blank" rel="noreferrer">Steiner, Cook &amp; Farewell (2000). Monitoring surgical performance using risk-adjusted cumulative sum charts.</a></div>
+        <div class="reference"><code>TALENTO</code><a href="https://doi.org/10.1007/s40279-019-01113-w" target="_blank" rel="noreferrer">Bergkamp et al. (2019). Methodological Issues in Soccer Talent Identification Research.</a></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-foot">
+  <div class="shell">
+    <span>Statistical Player Opportunity Monitoring · análise exploratória</span>
+    <span>Minutagem representa oportunidade observada, não talento demonstrado.</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  var COLORS={"ENG-1":"#75569a","SPA-1":"#a6761d","GER-1":"#a54f72","ITA-1":"#27715d","FRA-1":"#3e62a8","POR-1":"#397b86","BR-1":"#b4553d","NED-1":"#d97b29","BEL-1":"#aa8b22","ARG-1":"#5a81ad","COL-1":"#c65b45","PAR-1":"#745d9b","URU-1":"#478a9c","KSA-1":"#33805c","MEX-1":"#a84d72","USA-1":"#536b7a"};
+  var FLAGS={"ENG-1":"🇬🇧","SPA-1":"🇪🇸","GER-1":"🇩🇪","ITA-1":"🇮🇹","FRA-1":"🇫🇷","POR-1":"🇵🇹","BR-1":"🇧🇷","NED-1":"🇳🇱","BEL-1":"🇧🇪","ARG-1":"🇦🇷","COL-1":"🇨🇴","PAR-1":"🇵🇾","URU-1":"🇺🇾","KSA-1":"🇸🇦","MEX-1":"🇲🇽","USA-1":"🇺🇸"};
+  var fmt=new Intl.NumberFormat("pt-BR");
+  var DATA=null,PLAYERS=[],LEAGUES=[],CLUBS=[],FILTERED=[],POINTS=[],USAGE_FILTERED=[],USAGE_POINTS=[],ACTIVE=null;
+  var els={
+    league:document.getElementById("leagueFilter"),
+    position:document.getElementById("positionFilter"),
+    score:document.getElementById("scoreFilter"),
+    count:document.getElementById("figureCount"),
+    canvas:document.getElementById("signalPlot"),
+    wrap:document.getElementById("plotWrap"),
+    tip:document.getElementById("plotTip"),
+    selected:document.getElementById("selectedNote"),
+    search:document.getElementById("playerSearch"),
+    results:document.getElementById("searchResults"),
+    empty:document.getElementById("emptyProfile"),
+    profile:document.getElementById("profile"),
+    monitorLeague:document.getElementById("monitorLeague"),
+    monitorPosition:document.getElementById("monitorPosition"),
+    monitorThreshold:document.getElementById("monitorThreshold"),
+    monitorCount:document.getElementById("monitorCount"),
+    usageCanvas:document.getElementById("usagePlot"),
+    usageWrap:document.getElementById("usagePlotWrap"),
+    usageTip:document.getElementById("usagePlotTip"),
+    usageSelected:document.getElementById("usageSelectedNote")
+  };
+
+  function esc(value){
+    return String(value==null?"":value).replace(/[&<>"']/g,function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+    });
+  }
+  function fold(value){
+    return String(value==null?"":value).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+  }
+  function withoutDashes(value){
+    return String(value==null?"":value).replace(/\s*[—–]\s*/g," ");
+  }
+  function leagueName(code){
+    var found=LEAGUES.find(function(item){return item.id===code;});
+    return found?withoutDashes(found.name):(code||"n/d");
+  }
+  function positionName(value){
+    return {Goalkeeper:"Goleiro",Defender:"Defensor",Midfield:"Meio-campo",Attack:"Ataque"}[value]||value||"n/d";
+  }
+  function decodeHistory(player){
+    return player.history.map(function(h){
+      return {date:h[0],age:h[1]/1000,league:LEAGUES[h[2]].id,club:CLUBS[h[3]],minutes:h[4],share:h[5]/1000,percentile:h[6]/1000,peerZ:h[7]/100,ewma:h[8]/100,cusum:h[9]/100};
+    });
+  }
+
+  fetch("assets/player_opportunity_explorer.json",{cache:"no-store"})
+    .then(function(response){if(!response.ok)throw Error("Falha ao carregar a base.");return response.json();})
+    .then(function(data){
+      DATA=data;PLAYERS=data.players;LEAGUES=data.leagues;CLUBS=data.clubs;
+      LEAGUES.forEach(function(league){
+        var option=document.createElement("option");
+        option.value=league.id;
+        option.textContent=(FLAGS[league.id]?FLAGS[league.id]+"  ":"")+league.id;
+        els.league.appendChild(option);
+        els.monitorLeague.appendChild(option.cloneNode(true));
+      });
+      document.getElementById("legend").innerHTML=LEAGUES.map(function(league){
+        return '<span><i style="background:'+COLORS[league.id]+'"></i>'+esc(leagueName(league.id))+"</span>";
+      }).join("");
+      document.getElementById("usageLegend").innerHTML=LEAGUES.map(function(league){
+        return '<span><i style="background:'+COLORS[league.id]+'"></i>'+esc(leagueName(league.id))+"</span>";
+      }).join("");
+      applyFilters();
+      applyUsageFilters();
+    })
+    .catch(function(error){
+      console.error(error);
+      els.selected.textContent="Não foi possível carregar a base. Abra esta pasta por meio de um servidor HTTP local.";
+    });
+
+  function applyFilters(){
+    var league=els.league.value;
+    var position=els.position.value;
+    var minScore=Number(els.score.value);
+    FILTERED=PLAYERS.filter(function(player){
+      return player.score!=null&&player.score>=minScore&&(!league||player.signalLeague===league)&&(!position||player.position===position);
+    });
+    els.count.textContent=fmt.format(FILTERED.length)+" jogadores";
+    drawDistribution();
+  }
+
+  function distributionScales(width,height){
+    var pad={left:58,right:22,top:18,bottom:48};
+    var yValues=FILTERED.map(function(player){return player.peakEwma;}).filter(Number.isFinite);
+    var yMin=Math.min(0,Math.floor(Math.min.apply(null,yValues.length?yValues:[0])*2)/2);
+    var yMax=Math.max(1,Math.ceil(Math.max.apply(null,yValues.length?yValues:[1])*2)/2);
+    return {
+      pad:pad,
+      x:function(value){return pad.left+(value-DATA.meta.minAge)/(DATA.meta.maxAge+1-DATA.meta.minAge)*(width-pad.left-pad.right);},
+      y:function(value){return pad.top+(yMax-value)/(yMax-yMin)*(height-pad.top-pad.bottom);},
+      yMin:yMin,yMax:yMax
+    };
+  }
+
+  function drawDistribution(){
+    if(!DATA)return;
+    var canvas=els.canvas;
+    var rect=canvas.getBoundingClientRect();
+    var dpr=Math.min(window.devicePixelRatio||1,2);
+    var width=Math.max(1,rect.width),height=Math.max(1,rect.height);
+    canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);
+    var ctx=canvas.getContext("2d");
+    ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,width,height);
+    var scale=distributionScales(width,height),pad=scale.pad;
+    var plotWidth=width-pad.left-pad.right,plotHeight=height-pad.top-pad.bottom;
+
+    ctx.font="10px DM Mono, monospace";
+    ctx.fillStyle="#747770";
+    ctx.strokeStyle="#e0e1dc";
+    ctx.lineWidth=1;
+    for(var value=DATA.meta.minAge;value<=DATA.meta.maxAge+1;value++){
+      var x=scale.x(value);
+      ctx.beginPath();ctx.moveTo(x,pad.top);ctx.lineTo(x,height-pad.bottom);ctx.stroke();
+      ctx.textAlign=value===DATA.meta.minAge?"left":(value===DATA.meta.maxAge+1?"right":"center");
+      ctx.fillText(value+" anos",x,height-17);
+    }
+    var step=(scale.yMax-scale.yMin)>4?1:.5;
+    for(var tick=Math.ceil(scale.yMin/step)*step;tick<=scale.yMax+.001;tick+=step){
+      var y=scale.y(tick);
+      ctx.strokeStyle=Math.abs(tick)<.001?"#aeb1aa":"#e0e1dc";
+      ctx.beginPath();ctx.moveTo(pad.left,y);ctx.lineTo(width-pad.right,y);ctx.stroke();
+      ctx.fillStyle="#747770";ctx.textAlign="right";
+      ctx.fillText(tick.toFixed(tick%1===0?0:1),pad.left-9,y+3);
+    }
+    ctx.save();
+    ctx.translate(14,pad.top+plotHeight/2);
+    ctx.rotate(-Math.PI/2);ctx.textAlign="center";ctx.fillStyle="#747770";
+    ctx.fillText("MAIOR EWMA PADRONIZADA",0,0);ctx.restore();
+
+    POINTS=[];
+    FILTERED.forEach(function(player){
+      var x=scale.x(player.signalAge),y=scale.y(player.peakEwma);
+      if(!Number.isFinite(x)||!Number.isFinite(y))return;
+      POINTS.push({x:x,y:y,player:player});
+      ctx.globalAlpha=ACTIVE&&ACTIVE.id===player.id?1:.46;
+      ctx.fillStyle=COLORS[player.signalLeague]||"#666";
+      ctx.beginPath();ctx.arc(x,y,ACTIVE&&ACTIVE.id===player.id?5.2:2.2,0,Math.PI*2);ctx.fill();
+      if(ACTIVE&&ACTIVE.id===player.id){
+        ctx.globalAlpha=1;ctx.strokeStyle="#181918";ctx.lineWidth=1.2;ctx.stroke();
+      }
+    });
+    ctx.globalAlpha=1;
+  }
+
+  function nearestPoint(event){
+    var rect=els.canvas.getBoundingClientRect();
+    var x=event.clientX-rect.left,y=event.clientY-rect.top,best=null,bestDistance=100;
+    POINTS.forEach(function(point){
+      var distance=(point.x-x)*(point.x-x)+(point.y-y)*(point.y-y);
+      if(distance<bestDistance){bestDistance=distance;best=point;}
+    });
+    return best;
+  }
+
+  els.canvas.addEventListener("pointermove",function(event){
+    var point=nearestPoint(event);
+    if(!point){els.tip.style.display="none";return;}
+    var player=point.player,rect=els.wrap.getBoundingClientRect();
+    els.tip.innerHTML="<b>"+esc(player.name)+"</b><br>"+esc(leagueName(player.signalLeague))+" · "+player.signalAge.toFixed(2)+" anos<br>EWMA "+player.peakEwma.toFixed(2)+" · percentil "+player.score.toFixed(1);
+    els.tip.style.left=(event.clientX-rect.left)+"px";
+    els.tip.style.top=(event.clientY-rect.top)+"px";
+    els.tip.style.display="block";
+  });
+  els.canvas.addEventListener("pointerleave",function(){els.tip.style.display="none";});
+  els.canvas.addEventListener("click",function(event){
+    var point=nearestPoint(event);
+    if(!point)return;
+    selectPlayer(point.player,true);
+  });
+
+  function selectPlayer(player,scroll){
+    if(!player)return;
+    ACTIVE=player;
+    els.search.value=player.name;
+    els.results.classList.remove("open");
+    els.selected.innerHTML='<a href="#player">'+esc(player.name)+" selecionado · consultar trajetória ↓</a>";
+    els.usageSelected.innerHTML='<a href="#player">'+esc(player.name)+" selecionado · consultar trajetória ↑</a>";
+    renderProfile(player);
+    drawDistribution();
+    drawUsagePlot();
+    if(scroll)document.getElementById("player").scrollIntoView({behavior:"smooth",block:"start"});
+  }
+
+  function renderProfile(player){
+    var history=decodeHistory(player),moves=[];
+    for(var i=1;i<history.length;i++){
+      if(history[i].league!==history[i-1].league){
+        moves.push({date:history[i].date,age:history[i].age,from:history[i-1].league,to:history[i].league});
+      }
+    }
+    els.empty.style.display="none";
+    els.profile.classList.add("visible");
+    var moveHtml=moves.length?moves.map(function(move){
+      return '<span class="move"><b>'+esc(leagueName(move.from))+" → "+esc(leagueName(move.to))+"</b> · "+move.age.toFixed(1)+" anos · "+esc(move.date)+"</span>";
+    }).join(""):'<span class="move">Nenhuma mudança entre as ligas analisadas na janela observada.</span>';
+    els.profile.innerHTML=
+      '<div class="profile-head"><div><h3>'+esc(player.name)+'</h3><p class="profile-meta">'+esc(positionName(player.position))+" · "+esc(player.club)+" · ID "+esc(player.id)+'</p><p class="profile-context">maior sinal: '+esc(leagueName(player.signalLeague))+" · "+esc(player.signalClub)+" · "+player.signalAge.toFixed(2)+" anos · "+esc(player.signalDate)+'</p></div><div class="signal-score"><strong>'+player.score.toFixed(1)+'</strong><span>percentil do maior sinal</span></div></div>'+
+      '<div class="metrics"><div class="metric"><strong>'+fmt.format(player.minutes)+'</strong><span>minutos, 16 a 23</span></div><div class="metric"><strong>'+fmt.format(player.rounds)+'</strong><span>rodadas observadas</span></div><div class="metric"><strong>'+Math.round((player.playRate||0)*100)+'%</strong><span>rodadas com minutos</span></div><div class="metric"><strong>'+player.peakEwma.toFixed(2)+'</strong><span>maior EWMA</span></div></div>'+
+      '<div class="trajectory-head"><div><h3>Minutagem e desvio persistente por rodada</h3><p>linha: EWMA · barras: minutos</p></div><p>'+esc(history[0]?history[0].date:"n/d")+" a "+esc(history.length?history[history.length-1].date:"n/d")+'</p></div>'+
+      '<div class="trajectory-wrap" id="trajectoryWrap"><svg id="trajectory" viewBox="0 0 1000 390" preserveAspectRatio="none" role="img" aria-label="Trajetória longitudinal de '+esc(player.name)+'"></svg><div class="tooltip" id="trajectoryTip"></div></div><div class="moves">'+moveHtml+"</div>";
+    drawTrajectory(history);
+  }
+
+  function drawTrajectory(rows){
+    var svg=document.getElementById("trajectory"),wrap=document.getElementById("trajectoryWrap"),tip=document.getElementById("trajectoryTip");
+    if(!svg||!rows.length)return;
+    var width=1000,height=390,pad={left:54,right:22,top:22,bottom:44};
+    var innerWidth=width-pad.left-pad.right,innerHeight=height-pad.top-pad.bottom;
+    var values=rows.map(function(row){return row.ewma;});
+    var yMin=Math.min(-1,Math.floor(Math.min.apply(null,values)*2)/2);
+    var yMax=Math.max(1,Math.ceil(Math.max.apply(null,values)*2)/2);
+    function x(index){return pad.left+(rows.length===1?.5:index/(rows.length-1))*innerWidth;}
+    function y(value){return pad.top+(yMax-value)/(yMax-yMin)*innerHeight;}
+    var html="";
+    var step=(yMax-yMin)>4?1:.5;
+    for(var tick=Math.ceil(yMin/step)*step;tick<=yMax+.001;tick+=step){
+      html+='<line x1="'+pad.left+'" y1="'+y(tick)+'" x2="'+(width-pad.right)+'" y2="'+y(tick)+'" stroke="'+(Math.abs(tick)<.001?"#aeb1aa":"#e0e1dc")+'" stroke-width="1"/>';
+      html+='<text x="'+(pad.left-10)+'" y="'+(y(tick)+3)+'" text-anchor="end" font-size="10" fill="#747770" font-family="DM Mono,monospace">'+tick.toFixed(tick%1===0?0:1)+"</text>";
+    }
+    rows.forEach(function(row,index){
+      var barHeight=Math.min(74,row.minutes/90*74);
+      var barWidth=Math.max(1.2,innerWidth/rows.length*.58);
+      html+='<rect x="'+(x(index)-barWidth/2)+'" y="'+(height-pad.bottom-barHeight)+'" width="'+barWidth+'" height="'+barHeight+'" fill="'+COLORS[row.league]+'" opacity=".17"/>';
+      if(index&&row.league!==rows[index-1].league){
+        html+='<line x1="'+x(index)+'" y1="'+pad.top+'" x2="'+x(index)+'" y2="'+(height-pad.bottom)+'" stroke="'+COLORS[row.league]+'" stroke-dasharray="4 4"/>';
+      }
+    });
+    var starts=[0];
+    for(var i=1;i<rows.length;i++)if(rows[i].league!==rows[i-1].league)starts.push(i);
+    starts.forEach(function(start,segmentIndex){
+      var end=segmentIndex+1<starts.length?starts[segmentIndex+1]:rows.length;
+      var path="";
+      for(var j=start;j<end;j++)path+=(j===start?"M":"L")+x(j).toFixed(1)+","+y(rows[j].ewma).toFixed(1)+" ";
+      html+='<path d="'+path+'" fill="none" stroke="'+COLORS[rows[start].league]+'" stroke-width="2.3" stroke-linejoin="round" stroke-linecap="round"/>';
+    });
+    rows.forEach(function(row,index){
+      html+='<circle cx="'+x(index)+'" cy="'+y(row.ewma)+'" r="'+(index===rows.length-1?3.8:1.8)+'" fill="'+COLORS[row.league]+'"/>';
+    });
+    html+='<text x="'+pad.left+'" y="'+(height-15)+'" font-size="10" fill="#747770" font-family="DM Mono,monospace">'+rows[0].age.toFixed(1)+' anos</text>';
+    html+='<text x="'+(width-pad.right)+'" y="'+(height-15)+'" text-anchor="end" font-size="10" fill="#747770" font-family="DM Mono,monospace">'+rows[rows.length-1].age.toFixed(1)+" anos</text>";
+    svg.innerHTML=html;
+    svg.onpointermove=function(event){
+      var rect=svg.getBoundingClientRect();
+      var px=(event.clientX-rect.left)/rect.width*width;
+      var index=Math.max(0,Math.min(rows.length-1,Math.round((px-pad.left)/innerWidth*(rows.length-1))));
+      var row=rows[index],outer=wrap.getBoundingClientRect();
+      tip.innerHTML="<b>"+esc(row.date)+" · "+row.age.toFixed(2)+" anos</b><br>"+esc(leagueName(row.league))+" · "+esc(row.club)+"<br>"+row.minutes+" min · EWMA "+row.ewma.toFixed(2)+" · percentil da rodada "+Math.round(row.percentile*100);
+      tip.style.left=(event.clientX-outer.left)+"px";tip.style.top=(event.clientY-outer.top)+"px";tip.style.display="block";
+    };
+    svg.onpointerleave=function(){tip.style.display="none";};
+  }
+
+  function renderSearch(){
+    var query=fold(els.search.value.trim());
+    if(!query){els.results.classList.remove("open");els.results.innerHTML="";return;}
+    var matches=PLAYERS.filter(function(player){
+      return player.score!=null&&fold(player.name+" "+player.club).indexOf(query)!==-1;
+    }).sort(function(a,b){return b.score-a.score;}).slice(0,10);
+    els.results.innerHTML=matches.length?matches.map(function(player){
+      return '<button class="search-row" data-id="'+esc(player.id)+'"><span><strong>'+esc(player.name)+'</strong><span>'+esc(positionName(player.position))+" · "+esc(player.club)+" · "+esc(leagueName(player.signalLeague))+'</span></span><code>p'+player.score.toFixed(1)+"</code></button>";
+    }).join(""):'<div class="search-row"><span>Nenhum jogador encontrado.</span></div>';
+    els.results.classList.add("open");
+    Array.prototype.forEach.call(els.results.querySelectorAll("[data-id]"),function(button){
+      button.onclick=function(){selectPlayer(PLAYERS.find(function(player){return player.id===button.dataset.id;}),false);};
+    });
+  }
+
+  function applyUsageFilters(){
+    var league=els.monitorLeague.value;
+    var position=els.monitorPosition.value;
+    var threshold=Number(els.monitorThreshold.value||0);
+    USAGE_FILTERED=PLAYERS.filter(function(player){
+      return player.usagePlotEligible&&player.score>=threshold&&(!league||player.league===league)&&
+        (!position||player.position===position);
+    });
+    els.monitorCount.textContent=fmt.format(USAGE_FILTERED.length)+(USAGE_FILTERED.length===1?" jogador":" jogadores");
+    drawUsagePlot();
+  }
+
+  function drawUsagePlot(){
+    if(!DATA)return;
+    var canvas=els.usageCanvas;
+    var rect=canvas.getBoundingClientRect();
+    var dpr=Math.min(window.devicePixelRatio||1,2);
+    var width=Math.max(1,rect.width),height=Math.max(1,rect.height);
+    canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);
+    var ctx=canvas.getContext("2d");
+    ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,width,height);
+    var pad={left:64,right:24,top:24,bottom:54};
+    var plotWidth=width-pad.left-pad.right,plotHeight=height-pad.top-pad.bottom;
+    function x(value){return pad.left+value*plotWidth;}
+    function y(value){return pad.top+(1-value)*plotHeight;}
+
+    ctx.fillStyle="rgba(180,85,61,.055)";
+    ctx.beginPath();ctx.moveTo(x(0),y(0));ctx.lineTo(x(1),y(0));ctx.lineTo(x(1),y(1));ctx.closePath();ctx.fill();
+    ctx.font="10px DM Mono, monospace";
+    for(var tick=0;tick<=1.001;tick+=.25){
+      var gx=x(tick),gy=y(tick);
+      ctx.strokeStyle="#e0e1dc";ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(gx,pad.top);ctx.lineTo(gx,height-pad.bottom);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(pad.left,gy);ctx.lineTo(width-pad.right,gy);ctx.stroke();
+      ctx.fillStyle="#747770";
+      ctx.textAlign=tick===0?"left":(tick===1?"right":"center");
+      ctx.fillText(Math.round(tick*100)+"%",gx,height-20);
+      ctx.textAlign="right";ctx.fillText(Math.round(tick*100)+"%",pad.left-10,gy+3);
+    }
+    ctx.save();ctx.setLineDash([5,5]);ctx.strokeStyle="#8f928b";ctx.lineWidth=1.2;
+    ctx.beginPath();ctx.moveTo(x(0),y(0));ctx.lineTo(x(1),y(1));ctx.stroke();ctx.restore();
+    ctx.fillStyle="#747770";ctx.textAlign="center";
+    ctx.fillText("UTILIZAÇÃO ANTERIOR",pad.left+plotWidth/2,height-4);
+    ctx.save();ctx.translate(14,pad.top+plotHeight/2);ctx.rotate(-Math.PI/2);
+    ctx.fillText("UTILIZAÇÃO RECENTE · 5 DECISÕES",0,0);ctx.restore();
+    ctx.fillStyle="#9a6d60";ctx.textAlign="right";ctx.fillText("REDUÇÃO",width-pad.right-8,height-pad.bottom-10);
+    ctx.fillStyle="#668172";ctx.textAlign="left";ctx.fillText("AUMENTO",pad.left+8,pad.top+15);
+
+    USAGE_POINTS=[];
+    USAGE_FILTERED.forEach(function(player){
+      var px=x(player.historicalUsage),py=y(player.recentUsage);
+      if(!Number.isFinite(px)||!Number.isFinite(py))return;
+      USAGE_POINTS.push({x:px,y:py,player:player});
+      ctx.globalAlpha=ACTIVE&&ACTIVE.id===player.id?1:.48;
+      ctx.fillStyle=COLORS[player.league]||"#666";
+      ctx.beginPath();ctx.arc(px,py,ACTIVE&&ACTIVE.id===player.id?5.4:2.3,0,Math.PI*2);ctx.fill();
+      if(ACTIVE&&ACTIVE.id===player.id){
+        ctx.globalAlpha=1;ctx.strokeStyle="#181918";ctx.lineWidth=1.2;ctx.stroke();
+      }
+    });
+    ctx.globalAlpha=1;
+  }
+
+  function nearestUsagePoint(event){
+    var rect=els.usageCanvas.getBoundingClientRect();
+    var x=event.clientX-rect.left,y=event.clientY-rect.top,best=null,bestDistance=100;
+    USAGE_POINTS.forEach(function(point){
+      var distance=(point.x-x)*(point.x-x)+(point.y-y)*(point.y-y);
+      if(distance<bestDistance){bestDistance=distance;best=point;}
+    });
+    return best;
+  }
+
+  els.usageCanvas.addEventListener("pointermove",function(event){
+    var point=nearestUsagePoint(event);
+    if(!point){els.usageTip.style.display="none";return;}
+    var player=point.player,rect=els.usageWrap.getBoundingClientRect();
+    var change=player.usageChangePp>0?"+"+player.usageChangePp.toFixed(1):player.usageChangePp.toFixed(1);
+    els.usageTip.innerHTML="<b>"+esc(player.name)+"</b><br>"+esc(leagueName(player.league))+" · "+esc(player.club)+"<br>anterior "+Math.round(player.historicalUsage*100)+"% · recente "+Math.round(player.recentUsage*100)+"% · "+change+" p.p.<br>maior sinal p"+player.score.toFixed(1);
+    els.usageTip.style.left=(event.clientX-rect.left)+"px";
+    els.usageTip.style.top=(event.clientY-rect.top)+"px";
+    els.usageTip.style.display="block";
+  });
+  els.usageCanvas.addEventListener("pointerleave",function(){els.usageTip.style.display="none";});
+  els.usageCanvas.addEventListener("click",function(event){
+    var point=nearestUsagePoint(event);
+    if(point)selectPlayer(point.player,true);
+  });
+
+  els.league.addEventListener("change",applyFilters);
+  els.position.addEventListener("change",applyFilters);
+  els.score.addEventListener("change",applyFilters);
+  els.monitorLeague.addEventListener("change",applyUsageFilters);
+  els.monitorPosition.addEventListener("change",applyUsageFilters);
+  els.monitorThreshold.addEventListener("change",applyUsageFilters);
+  els.search.addEventListener("input",renderSearch);
+  els.search.addEventListener("keydown",function(event){
+    if(event.key==="Enter"){
+      var first=els.results.querySelector("[data-id]");
+      if(first){event.preventDefault();first.click();}
+    }
+  });
+  document.addEventListener("click",function(event){
+    if(!event.target.closest(".player-find"))els.results.classList.remove("open");
+  });
+  var resizeTimer;
+  window.addEventListener("resize",function(){
+    clearTimeout(resizeTimer);
+    resizeTimer=setTimeout(function(){drawDistribution();drawUsagePlot();if(ACTIVE)renderProfile(ACTIVE);},120);
+  });
+})();
+</script>
+</body>
+</html>
