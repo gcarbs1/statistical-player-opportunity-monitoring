@@ -28,9 +28,8 @@ writes the event table, exports static figures to `viz/`, and updates the JSON
 asset consumed by the website.
 
 A flag begins after at least five observed decisions when the position-specific
-EWMA crosses its empirical 90th percentile. The episode is confirmed at the
-95th percentile. A new flag requires a club or league change, or three decisions
-below the median followed by five new decisions.
+EWMA crosses its empirical 90th percentile. A new flag requires a club or league
+change, or three decisions below the median followed by five new decisions.
 
 ## Local use
 
