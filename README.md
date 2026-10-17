@@ -23,13 +23,16 @@ Run the notebooks in order:
 
 The collection notebook updates completed and active seasons incrementally. The
 processing notebook builds player observations by match and league round. The
-final notebook calculates exploratory EWMA and recurrent opportunity flags,
+final notebook calculates the exploratory opportunity signal and early watches,
 writes the event table, exports static figures to `viz/`, and updates the JSON
 asset consumed by the website.
 
-A flag begins after at least five observed decisions when the position-specific
-EWMA crosses its empirical 90th percentile. A new flag requires a club or league
-change, or three decisions below the median followed by five new decisions.
+A player's first and only career watch begins when two observations in a
+rolling window of up to three eligible selection decisions have age-adjusted
+opportunity residuals of at least +0.75 and accumulated minutes are positive.
+The EWMA and watch window remain continuous across club or league changes.
+Injured and absent states pause the monitor and are not converted into
+zero-minute decisions.
 
 ## Local use
 
