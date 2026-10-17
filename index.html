@@ -26,12 +26,6 @@ h1,h2,h3,p{margin:0}
 .shell{width:min(1240px,calc(100% - 48px));margin-inline:auto}
 .reading{width:min(900px,calc(100% - 48px));margin-inline:auto}
 .mono{font-family:var(--mono)}
-.site-head{height:58px;border-bottom:1px solid var(--line)}
-.site-head .shell{height:100%;display:flex;align-items:center;justify-content:space-between;gap:24px}
-.brand{font-weight:600;letter-spacing:-.02em;text-decoration:none}
-.site-nav{display:flex;align-items:center;gap:24px;font-size:12px;color:var(--muted)}
-.site-nav a{text-decoration:none}
-.site-nav a:hover{color:var(--ink)}
 .intro{padding:68px 0 54px}
 .kicker{font:500 10px var(--mono);letter-spacing:.11em;text-transform:uppercase;color:var(--accent)}
 .intro h1{font:500 clamp(40px,5.4vw,66px)/1.02 var(--serif);letter-spacing:-.035em;max-width:880px;margin-top:14px}
@@ -44,11 +38,10 @@ h1,h2,h3,p{margin:0}
 .section-head h2{font:500 clamp(30px,4vw,44px)/1.08 var(--serif);letter-spacing:-.025em}
 .section-head p{font-size:13px;line-height:1.7;color:var(--muted);max-width:44ch;padding-top:6px}
 .figure{background:var(--surface);border:1px solid var(--line)}
-.figure-tools{display:grid;grid-template-columns:repeat(3,minmax(140px,210px)) 1fr;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line);align-items:end}
+.figure-tools{display:grid;grid-template-columns:repeat(3,minmax(140px,210px));gap:10px;padding:14px 16px;border-bottom:1px solid var(--line);align-items:end}
 .field label{display:block;margin:0 0 6px;font:400 10px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .field select,.field input{width:100%;height:38px;border:1px solid var(--line);background:transparent;padding:0 10px;border-radius:0;outline:none;font-size:12px}
 .field select:focus,.field input:focus{border-color:var(--accent)}
-.figure-count{justify-self:end;align-self:center;font:400 10px var(--mono);text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
 .plot-wrap{position:relative;height:590px;padding:18px 18px 8px}
 .plot-wrap canvas{display:block;width:100%;height:100%;cursor:crosshair}
 .tooltip{display:none;position:absolute;z-index:5;pointer-events:none;transform:translate(-50%,calc(-100% - 10px));padding:9px 11px;background:var(--ink);color:white;font-size:11px;line-height:1.55;white-space:nowrap}
@@ -127,12 +120,12 @@ h1,h2,h3,p{margin:0}
 .site-foot .shell{display:flex;justify-content:space-between;gap:30px;font:400 10px/1.6 var(--mono);color:var(--muted)}
 @media(max-width:900px){
   .section-head{grid-template-columns:70px 1fr}.section-head p{grid-column:2}
-  .figure-tools{grid-template-columns:1fr 1fr}.figure-count{justify-self:start}
+  .figure-tools{grid-template-columns:1fr 1fr}
   .plot-wrap{height:500px}.method-grid{grid-template-columns:1fr}
   .method-item,.method-item+.method-item{padding:18px 0;border-right:0;border-bottom:1px solid var(--line);min-height:0}
 }
 @media(max-width:640px){
-  .shell,.reading{width:min(100% - 28px,1240px)}.site-nav a{display:none}
+  .shell,.reading{width:min(100% - 28px,1240px)}
   .intro{padding:48px 0 38px}.abstract{grid-template-columns:1fr;gap:14px}
   .study-section{padding:52px 0}.section-head{grid-template-columns:1fr;gap:9px}.section-head p{grid-column:1}
   .figure-tools{grid-template-columns:1fr}.plot-wrap{height:460px;padding:10px 8px 4px}
@@ -148,20 +141,6 @@ h1,h2,h3,p{margin:0}
 </style>
 </head>
 <body>
-<header class="site-head">
-  <div class="shell">
-    <a class="brand" href="#top">Statistical Player Opportunity Monitoring</a>
-    <nav class="site-nav" aria-label="Navegação principal">
-      <a href="#distribution">Distribuição</a>
-      <a href="#season-leaders">Temporada</a>
-      <a href="#player">Jogador</a>
-      <a href="#cohorts">Watches</a>
-      <a href="#monitor">Monitor</a>
-      <a href="#method">Método</a>
-    </nav>
-  </div>
-</header>
-
 <main id="top">
   <section class="intro">
     <div class="reading">
@@ -208,7 +187,6 @@ h1,h2,h3,p{margin:0}
               <option value="99">99</option>
             </select>
           </div>
-          <div class="figure-count" id="figureCount"></div>
         </div>
         <div class="plot-wrap" id="plotWrap">
           <canvas id="signalPlot" role="img" aria-label="Dispersão dos jogadores por idade e maior EWMA de oportunidade"></canvas>
@@ -251,7 +229,6 @@ h1,h2,h3,p{margin:0}
               <option value="Attack">Ataque</option>
             </select>
           </div>
-          <div class="figure-count" id="leaderCount"></div>
         </div>
         <div class="plot-wrap" id="leaderPlotWrap">
           <canvas id="leaderPlot" role="img" aria-label="Dispersão por idade e maior EWMA da temporada"></canvas>
@@ -317,7 +294,6 @@ h1,h2,h3,p{margin:0}
               <option value="Attack">Ataque</option>
             </select>
           </div>
-          <div class="figure-count" id="cohortCount"></div>
         </div>
         <div class="plot-wrap" id="cohortPlotWrap">
           <canvas id="cohortPlot" role="img" aria-label="Dispersão da idade e dos minutos necessários para cada watch precoce"></canvas>
@@ -339,8 +315,8 @@ h1,h2,h3,p{margin:0}
     <div class="shell">
       <div class="section-head">
         <div class="section-number">FIGURA 05</div>
-        <h2>Utilização anterior × utilização recente</h2>
-        <p>O canto inferior direito concentra o caso de interesse: jovens que recebiam uma parcela relevante dos minutos e quase não foram utilizados nas cinco decisões elegíveis mais recentes. A cor informa se a EWMA também caiu.</p>
+        <h2>Maior EWMA × mudança recente</h2>
+        <p>O eixo horizontal representa o maior sinal EWMA da carreira observada. O eixo vertical mostra a mudança ao longo das cinco decisões elegíveis recentes: acima de zero há crescimento; abaixo, perda de oportunidade.</p>
       </div>
 
       <figure class="figure">
@@ -360,25 +336,21 @@ h1,h2,h3,p{margin:0}
             </select>
           </div>
           <div class="field">
-            <label for="monitorState">Leitura</label>
+            <label for="monitorState">Movimento da EWMA</label>
             <select id="monitorState">
-              <option value="">Todos os jogadores</option>
-              <option value="lost">Possível perda de espaço</option>
+              <option value="" selected>Todos os comparáveis</option>
+              <option value="growth">Em crescimento</option>
+              <option value="decline">Em queda</option>
+              <option value="unused">Sem minutos nas 5 recentes</option>
             </select>
           </div>
-          <div class="figure-count" id="monitorCount"></div>
         </div>
-        <div class="plot-wrap" id="usagePlotWrap">
-          <canvas id="usagePlot" role="img" aria-label="Dispersão da utilização anterior e recente dos jogadores"></canvas>
-          <div class="tooltip" id="usagePlotTip"></div>
+        <div class="plot-wrap" id="monitorPlotWrap">
+          <canvas id="monitorPlot" role="img" aria-label="Dispersão do maior EWMA histórico e da mudança até a EWMA atual"></canvas>
+          <div class="tooltip" id="monitorPlotTip"></div>
         </div>
         <figcaption class="figure-foot">
-          <div class="legend" id="usageLegend">
-            <span><i style="background:#b4553d"></i>Queda EWMA forte</span>
-            <span><i style="background:#b28a2e"></i>Queda EWMA moderada</span>
-            <span><i style="background:#47759b"></i>Estável ou crescente</span>
-          </div>
-          <div class="figure-note">Utilização anterior: parcela dos minutos antes das cinco decisões recentes. Possível perda de espaço: anterior ≥40%, recente ≤20% e delta EWMA ≤−0,50. Lesões e ausências declaradas permanecem fora do denominador.</div>
+          <div class="legend"><span><i style="background:#47759b"></i>EWMA em crescimento</span><span><i style="background:#b4553d"></i>EWMA em queda</span></div>
         </figcaption>
       </figure>
       <div class="selected-note" id="usageSelectedNote">Clique em um ponto para abrir a trajetória individual.</div>
@@ -451,7 +423,6 @@ h1,h2,h3,p{margin:0}
     league:document.getElementById("leagueFilter"),
     position:document.getElementById("positionFilter"),
     score:document.getElementById("scoreFilter"),
-    count:document.getElementById("figureCount"),
     canvas:document.getElementById("signalPlot"),
     wrap:document.getElementById("plotWrap"),
     tip:document.getElementById("plotTip"),
@@ -463,7 +434,6 @@ h1,h2,h3,p{margin:0}
     leaderLeague:document.getElementById("leaderLeague"),
     leaderSeason:document.getElementById("leaderSeason"),
     leaderPosition:document.getElementById("leaderPosition"),
-    leaderCount:document.getElementById("leaderCount"),
     leaderCanvas:document.getElementById("leaderPlot"),
     leaderWrap:document.getElementById("leaderPlotWrap"),
     leaderTip:document.getElementById("leaderPlotTip"),
@@ -471,7 +441,6 @@ h1,h2,h3,p{margin:0}
     cohortStatus:document.getElementById("cohortStatus"),
     cohortLeague:document.getElementById("cohortLeague"),
     cohortPosition:document.getElementById("cohortPosition"),
-    cohortCount:document.getElementById("cohortCount"),
     cohortCanvas:document.getElementById("cohortPlot"),
     cohortWrap:document.getElementById("cohortPlotWrap"),
     cohortTip:document.getElementById("cohortPlotTip"),
@@ -479,10 +448,9 @@ h1,h2,h3,p{margin:0}
     monitorLeague:document.getElementById("monitorLeague"),
     monitorPosition:document.getElementById("monitorPosition"),
     monitorState:document.getElementById("monitorState"),
-    monitorCount:document.getElementById("monitorCount"),
-    usageCanvas:document.getElementById("usagePlot"),
-    usageWrap:document.getElementById("usagePlotWrap"),
-    usageTip:document.getElementById("usagePlotTip"),
+    monitorCanvas:document.getElementById("monitorPlot"),
+    monitorWrap:document.getElementById("monitorPlotWrap"),
+    monitorTip:document.getElementById("monitorPlotTip"),
     usageSelected:document.getElementById("usageSelectedNote")
   };
 
@@ -565,7 +533,6 @@ h1,h2,h3,p{margin:0}
     FILTERED=PLAYERS.filter(function(player){
       return player.score!=null&&player.score>=minScore&&(!league||player.signalLeague===league)&&(!position||player.position===position);
     });
-    els.count.textContent=fmt.format(FILTERED.length)+" jogadores";
     drawDistribution();
   }
 
@@ -684,8 +651,6 @@ h1,h2,h3,p{margin:0}
       return row.league===league&&row.seasonId===season&&(!position||row.position===position);
     }).sort(function(a,b){return a.rank-b.rank;});
     SEASON_FILTERED=eligible;
-    var total=eligible.length?(position?eligible[0].positionEligiblePlayers:eligible[0].eligiblePlayers):0;
-    els.leaderCount.textContent=fmt.format(total)+(total===1?" jogador elegível":" jogadores elegíveis");
     drawSeasonPlot();
   }
 
@@ -924,8 +889,6 @@ h1,h2,h3,p{margin:0}
       return player&&(!status||player.studyCohort===status)&&(!league||watch.league===league)&&
         (!position||player.position===position);
     });
-    var players=new Set(COHORT_FILTERED.map(function(watch){return watch.playerId;})).size;
-    els.cohortCount.textContent=fmt.format(COHORT_FILTERED.length)+" watches · "+fmt.format(players)+" jogadores";
     drawCohortPlot();
   }
 
@@ -1018,101 +981,113 @@ h1,h2,h3,p{margin:0}
       return player.usagePlotEligible&&player.watchCount>0&&(!league||player.league===league)&&
         (!position||player.position===position);
     });
-    var lostCount=base.filter(isLossOfSpace).length;
-    USAGE_FILTERED=state==="lost"?base.filter(isLossOfSpace):base;
-    els.monitorCount.textContent=state==="lost"
-      ?fmt.format(USAGE_FILTERED.length)+(USAGE_FILTERED.length===1?" possível perda":" possíveis perdas")
-      :fmt.format(base.length)+" jogadores · "+fmt.format(lostCount)+" em perda de espaço";
+    USAGE_FILTERED=state==="growth"
+      ?base.filter(function(player){return player.ewmaChange>0;})
+      :(state==="decline"
+        ?base.filter(function(player){return player.ewmaChange<0;})
+        :(state==="unused"?base.filter(isRecentlyUnused):base));
+    USAGE_FILTERED.sort(function(a,b){
+      return Math.abs(a.ewmaChange)-Math.abs(b.ewmaChange);
+    });
     drawUsagePlot();
   }
 
-  function isLossOfSpace(player){
-    return player.historicalUsage>=.4&&player.recentUsage<=.2&&player.ewmaChange<=-.5;
-  }
-
-  function usageDeltaColor(player){
-    if(player.ewmaChange<=-.75)return "#b4553d";
-    if(player.ewmaChange<=-.25)return "#b28a2e";
-    return "#47759b";
+  function isRecentlyUnused(player){
+    return player.recent5Minutes===0;
   }
 
   function drawUsagePlot(){
     if(!DATA)return;
-    var canvas=els.usageCanvas;
+    var canvas=els.monitorCanvas;
     var rect=canvas.getBoundingClientRect();
     var dpr=Math.min(window.devicePixelRatio||1,2);
     var width=Math.max(1,rect.width),height=Math.max(1,rect.height);
     canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);
     var ctx=canvas.getContext("2d");
     ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,width,height);
-    var pad={left:64,right:24,top:24,bottom:54};
+    var pad={left:72,right:24,top:25,bottom:58};
     var plotWidth=width-pad.left-pad.right,plotHeight=height-pad.top-pad.bottom;
-    function x(value){return pad.left+value*plotWidth;}
-    function y(value){return pad.top+(1-value)*plotHeight;}
-
-    ctx.fillStyle="rgba(180,85,61,.075)";
-    ctx.fillRect(x(.4),y(.2),x(1)-x(.4),y(0)-y(.2));
-    ctx.font="10px DM Mono, monospace";
-    for(var tick=0;tick<=1.001;tick+=.2){
-      var gx=x(tick),gy=y(tick);
-      ctx.strokeStyle=tick===0?"#c2c4be":"#e0e1dc";ctx.lineWidth=1;
-      ctx.beginPath();ctx.moveTo(gx,pad.top);ctx.lineTo(gx,height-pad.bottom);ctx.stroke();
-      ctx.beginPath();ctx.moveTo(pad.left,gy);ctx.lineTo(width-pad.right,gy);ctx.stroke();
-      ctx.fillStyle="#747770";
-      ctx.textAlign=tick===0?"left":(tick>.999?"right":"center");
-      ctx.fillText(Math.round(tick*100)+"%",gx,height-20);
-      ctx.textAlign="right";ctx.fillText(Math.round(tick*100)+"%",pad.left-10,gy+3);
+    if(!USAGE_FILTERED.length){
+      ctx.fillStyle="#747770";ctx.font="12px Inter, sans-serif";ctx.textAlign="center";
+      ctx.fillText("Nenhum jogador encontrado para estes filtros.",width/2,height/2);USAGE_POINTS=[];
+      return;
     }
-    ctx.save();ctx.setLineDash([5,5]);ctx.strokeStyle="#8f928b";ctx.lineWidth=1.2;
-    ctx.beginPath();ctx.moveTo(x(0),y(0));ctx.lineTo(x(1),y(1));ctx.stroke();ctx.restore();
+    var values=PLAYERS.filter(function(player){return player.usagePlotEligible;})
+      .map(function(player){return player.peakEwma;}).filter(Number.isFinite);
+    var xMin=Math.min(0,Math.floor(Math.min.apply(null,values)*2)/2);
+    var xMax=Math.max(1,Math.ceil(Math.max.apply(null,values)*2)/2);
+    if(xMax===xMin)xMax=xMin+1;
+    var deltas=PLAYERS.filter(function(player){return player.usagePlotEligible;})
+      .map(function(player){return player.ewmaChange;}).filter(Number.isFinite);
+    var yMin=Math.min(-1,Math.floor(Math.min.apply(null,deltas)*2)/2);
+    var yMax=Math.max(1,Math.ceil(Math.max.apply(null,deltas)*2)/2);
+    function x(value){return pad.left+(value-xMin)/(xMax-xMin)*plotWidth;}
+    function y(value){return pad.top+(yMax-value)/(yMax-yMin)*plotHeight;}
+
+    ctx.font="10px DM Mono, monospace";ctx.lineWidth=1;
+    var xStep=(xMax-xMin)>4?1:.5;
+    for(var tick=Math.ceil(xMin/xStep)*xStep;tick<=xMax+.001;tick+=xStep){
+      var gx=x(tick);ctx.strokeStyle=Math.abs(tick)<.001?"#aeb1aa":"#e0e1dc";
+      ctx.beginPath();ctx.moveTo(gx,pad.top);ctx.lineTo(gx,height-pad.bottom);ctx.stroke();
+      ctx.fillStyle="#747770";ctx.textAlign=tick===xMin?"left":(tick+xStep>xMax?"right":"center");
+      ctx.fillText(tick.toFixed(tick%1===0?0:1),gx,height-25);
+    }
+    var yStep=(yMax-yMin)>5?1:.5;
+    for(var yTick=Math.ceil(yMin/yStep)*yStep;yTick<=yMax+.001;yTick+=yStep){
+      var gy=y(yTick);ctx.strokeStyle=Math.abs(yTick)<.001?"#8f928b":"#e0e1dc";
+      ctx.beginPath();ctx.moveTo(pad.left,gy);ctx.lineTo(width-pad.right,gy);ctx.stroke();
+      ctx.fillStyle="#747770";ctx.textAlign="right";
+      ctx.fillText((yTick>0?"+":"")+yTick.toFixed(yTick%1===0?0:1),pad.left-10,gy+3);
+    }
     ctx.fillStyle="#747770";ctx.textAlign="center";
-    ctx.fillText("UTILIZAÇÃO ANTES DAS 5 DECISÕES RECENTES",pad.left+plotWidth/2,height-4);
-    ctx.save();ctx.translate(14,pad.top+plotHeight/2);ctx.rotate(-Math.PI/2);
-    ctx.fillText("UTILIZAÇÃO NAS 5 DECISÕES RECENTES",0,0);ctx.restore();
-    ctx.fillStyle="#9a6d60";ctx.textAlign="right";
-    ctx.fillText("JÁ JOGAVA · AGORA POUCO UTILIZADO",width-pad.right-8,y(.2)+16);
+    ctx.fillText("MAIOR EWMA DA CARREIRA OBSERVADA",pad.left+plotWidth/2,height-5);
+    ctx.save();ctx.translate(15,pad.top+plotHeight/2);ctx.rotate(-Math.PI/2);
+    ctx.fillText("DELTA EWMA NAS 5 DECISÕES RECENTES",0,0);ctx.restore();
+    ctx.textAlign="right";ctx.globalAlpha=.78;
+    ctx.fillStyle="#47759b";ctx.fillText("EWMA EM CRESCIMENTO",width-pad.right-8,pad.top+14);
+    ctx.fillStyle="#b4553d";ctx.fillText("EWMA EM QUEDA",width-pad.right-8,height-pad.bottom-10);
+    ctx.globalAlpha=1;
 
     USAGE_POINTS=[];
-    USAGE_FILTERED.slice().sort(function(a,b){return Number(isLossOfSpace(a))-Number(isLossOfSpace(b));}).forEach(function(player){
-      var px=x(player.historicalUsage),py=y(player.recentUsage);
+    USAGE_FILTERED.forEach(function(player){
+      var delta=player.ewmaChange;
+      var px=x(player.peakEwma),py=y(delta);
       if(!Number.isFinite(px)||!Number.isFinite(py))return;
-      USAGE_POINTS.push({x:px,y:py,player:player});
       var selected=ACTIVE&&ACTIVE.id===player.id;
-      ctx.globalAlpha=selected?1:(isLossOfSpace(player)?.78:.46);
-      ctx.fillStyle=usageDeltaColor(player);
-      ctx.beginPath();ctx.arc(px,py,selected?5.4:(isLossOfSpace(player)?3.2:2.3),0,Math.PI*2);ctx.fill();
-      if(ACTIVE&&ACTIVE.id===player.id){
-        ctx.globalAlpha=1;ctx.strokeStyle="#181918";ctx.lineWidth=1.2;ctx.stroke();
-      }
+      var unusedShare=1-Math.max(0,Math.min(1,player.recentUsage||0));
+      var strength=delta>=0?Math.min(1,delta/yMax):Math.min(1,delta/yMin);
+      var radius=2.1+unusedShare*3.4;
+      ctx.globalAlpha=selected?1:.24+strength*.42+unusedShare*.2;
+      ctx.fillStyle=delta>=0?"#47759b":"#b4553d";
+      ctx.beginPath();ctx.arc(px,py,selected?6:radius,0,Math.PI*2);ctx.fill();
+      if(selected){ctx.globalAlpha=1;ctx.strokeStyle="#181918";ctx.lineWidth=1.2;ctx.stroke();}
+      USAGE_POINTS.push({x:px,y:py,player:player});
     });
     ctx.globalAlpha=1;
   }
 
   function nearestUsagePoint(event){
-    var rect=els.usageCanvas.getBoundingClientRect();
-    var x=event.clientX-rect.left,y=event.clientY-rect.top,best=null,bestDistance=100;
+    var rect=els.monitorCanvas.getBoundingClientRect();
+    var px=event.clientX-rect.left,py=event.clientY-rect.top,best=null,bestDistance=144;
     USAGE_POINTS.forEach(function(point){
-      var distance=(point.x-x)*(point.x-x)+(point.y-y)*(point.y-y);
-      if(distance<bestDistance){bestDistance=distance;best=point;}
+      var distance=(point.x-px)*(point.x-px)+(point.y-py)*(point.y-py);
+      if(distance<bestDistance){best=point;bestDistance=distance;}
     });
     return best;
   }
 
-  els.usageCanvas.addEventListener("pointermove",function(event){
+  els.monitorCanvas.addEventListener("pointermove",function(event){
     var point=nearestUsagePoint(event);
-    if(!point){els.usageTip.style.display="none";return;}
-    var player=point.player,rect=els.usageWrap.getBoundingClientRect();
-    var change=player.ewmaChange>0?"+"+player.ewmaChange.toFixed(2):player.ewmaChange.toFixed(2);
-    var status=isLossOfSpace(player)?"<br><b>possível perda de espaço</b>":"";
-    els.usageTip.innerHTML="<b>"+esc(player.name)+"</b><br>"+esc(leagueName(player.league))+" · "+esc(player.club)+"<br>uso anterior "+Math.round(player.historicalUsage*100)+"% · recente "+Math.round(player.recentUsage*100)+"%<br>"+fmt.format(player.recent5Minutes)+" min nas 5 decisões · delta EWMA "+change+status;
-    els.usageTip.style.left=(event.clientX-rect.left)+"px";
-    els.usageTip.style.top=(event.clientY-rect.top)+"px";
-    els.usageTip.style.display="block";
+    if(!point){els.monitorTip.style.display="none";return;}
+    var player=point.player,rect=els.monitorWrap.getBoundingClientRect();
+    var delta=(player.ewmaChange>0?"+":"")+player.ewmaChange.toFixed(2);
+    var movement=player.ewmaChange>=0?"EWMA em crescimento":"EWMA em queda";
+    els.monitorTip.innerHTML="<b>"+esc(player.name)+" · "+movement+"</b><br>"+esc(player.league)+" · "+esc(player.club)+" · "+player.ageAtCutoff.toFixed(1)+" anos<br>maior EWMA: "+player.peakEwma.toFixed(2)+" · p"+player.score.toFixed(1)+"<br>EWMA antes da janela "+player.previousEwma.toFixed(2)+" · atual "+player.currentEwma.toFixed(2)+" · delta "+delta+"<br>pico: "+esc(player.signalDate)+" · "+player.signalAge.toFixed(1)+" anos · "+esc(player.signalLeague)+" · "+esc(player.signalClub)+"<br>5 recentes: "+fmt.format(player.recent5Minutes)+" de "+fmt.format(player.recent5Available)+" min · "+Math.round(player.recentUsage*100)+"%";
+    els.monitorTip.style.left=(event.clientX-rect.left)+"px";els.monitorTip.style.top=(event.clientY-rect.top)+"px";els.monitorTip.style.display="block";
   });
-  els.usageCanvas.addEventListener("pointerleave",function(){els.usageTip.style.display="none";});
-  els.usageCanvas.addEventListener("click",function(event){
-    var point=nearestUsagePoint(event);
-    if(point)selectPlayer(point.player,true);
+  els.monitorCanvas.addEventListener("pointerleave",function(){els.monitorTip.style.display="none";});
+  els.monitorCanvas.addEventListener("click",function(event){
+    var point=nearestUsagePoint(event);if(point)selectPlayer(point.player,true);
   });
 
   els.league.addEventListener("change",applyFilters);
