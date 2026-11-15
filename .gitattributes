@@ -8,4 +8,4 @@
 *.parquet binary
 
 # Keep the website dataset in Git without rendering a large textual diff.
-assets/*.json -diff
+html/data/*.json -diff

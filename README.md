@@ -7,7 +7,7 @@ Collects round-level playing time from Transfermarkt for 16 domestic leagues bet
 - **Minutes.** One observation per player and match, normalized against every player observed in the same league round.
 - **Opportunity signal.** Age-adjusted residuals accumulated with EWMA and CUSUM across each player's career.
 - **Early watch.** A player's first and only watch begins when two observations in a rolling window of up to three eligible selection decisions have age-adjusted opportunity residuals of at least +0.75 and accumulated minutes are positive.
-- **Explorer.** Ranking, trajectories, and watch events per player.
+- **Explorer.** Five linked charts (peak signal by age, season leaders, individual trajectory, early watches, and recent movement), each with an accessible table.
 
 The EWMA and watch window remain continuous across club or league changes. Injured and absent states pause the monitor and are not converted into zero-minute decisions.
 
@@ -18,7 +18,7 @@ The EWMA and watch window remain continuous across club or league changes. Injur
 - `notebooks/02-opportunity_signals.ipynb`: calculates the opportunity signal and early watches, exports the tables, the static figures, and the website dataset.
 - `data/raw/`: source tables, HTTP cache, and collection checkpoints, excluded from version control.
 - `data/processed/`: normalized observations, trajectories, and analytical outputs, excluded from version control.
-- `index.html` and `assets/`: static website and the dataset it reads.
+- `index.html` and `html/`: static website; `styles.css` (style), `app.js` (charts and interaction) and `data/` (the dataset it reads).
 - `viz/`: static figures produced by notebook 02.
 
 ## Setup
@@ -45,5 +45,5 @@ python3 -m http.server 8000
 | `data/processed/age_16_23_opportunity_signals.parquet` | round-level decisions with residuals and monitoring statistics |
 | `data/processed/player_opportunity_summary.parquet` | one row per player, with ranking fields |
 | `data/processed/opportunity_watch_events.parquet` | first career watch of each player |
-| `assets/player_opportunity_explorer.json` | compact dataset read by `index.html` |
+| `html/data/player_opportunity_explorer.json` | compact dataset read by `index.html` |
 | `viz/` | watches by age, exposure until the watch, watches by position, and recurrence |

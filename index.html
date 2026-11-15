@@ -1,1109 +1,264 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#f4edda">
-<title>Statistical Player Opportunity Monitoring</title>
-<meta name="description" content="Estudo longitudinal da oportunidade competitiva de jogadores entre 16 e 23 anos em 16 ligas nacionais.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23f1e6cb'/%3E%3Cpath d='M6 25V7h5l5 9 5-9h5v18h-4V14l-6 10-6-10v11z' fill='%232f6b59'/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500&display=swap" rel="stylesheet">
-<style>
-:root{
-  color-scheme:light;
-  --paper:#f4edda;--surface:#fffaf0;--surface-2:#f8f0df;--ink:#20231f;--muted:#5d625b;--faint:#777c73;
-  --line:#ded3bd;--line-dark:#c8b99d;--accent:#2f6b59;--accent-soft:#e4eee9;
-  --sans:"Inter",Arial,sans-serif;--serif:"Source Serif 4",Georgia,serif;--mono:"DM Mono",monospace;
-  --radius:12px;--shadow:none
-}
-*,*::before,*::after{box-sizing:border-box}
-html{scroll-behavior:smooth;background:var(--paper)}
-body{margin:0;min-height:100vh;background:var(--paper);color:var(--ink);font:14px/1.6 var(--sans);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
-button,input,select{font:inherit;color:inherit}
-button{cursor:pointer}
-a{color:inherit}
-h1,h2,h3,p{margin:0}
-::selection{background:#cfe1d9;color:#17382f}
-.shell{width:min(1280px,calc(100% - 56px));margin-inline:auto}
-.reading{width:min(960px,calc(100% - 56px));margin-inline:auto}
-.mono{font-family:var(--mono)}
-.intro{position:relative;display:grid;min-height:62vh;align-items:end;padding:110px 0 76px;overflow:hidden}
-.intro::before{display:none}
-.intro .reading{position:relative}
-.kicker{font:500 10px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
-.intro h1{font:500 clamp(48px,7vw,88px)/.98 var(--sans);letter-spacing:-.062em;max-width:920px;margin-top:20px;text-wrap:balance}
-.abstract{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:72px;margin-top:44px;padding-top:22px;border-top:1px solid var(--line);max-width:900px}
-.abstract p{font-size:13px;line-height:1.7;color:var(--muted);max-width:52ch}
-.abstract p:first-child{color:#3d423c}
-.study-section{padding:92px 0;border-top:1px solid var(--line)}
-.study-section:nth-of-type(odd){background:var(--paper)}
-.section-head{display:grid;grid-template-columns:92px minmax(0,620px) minmax(240px,1fr);gap:30px;align-items:start;margin-bottom:34px}
-.section-number{padding-top:8px;font:500 10px var(--mono);letter-spacing:.13em;color:var(--accent)}
-.section-head h2{font:500 clamp(30px,3.7vw,50px)/1.02 var(--sans);letter-spacing:-.048em;text-wrap:balance}
-.section-head p{font-size:12px;line-height:1.7;color:var(--muted);max-width:40ch;padding-top:7px}
-.figure{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:none;overflow:hidden;transition:border-color .2s ease}
-.figure:hover{border-color:var(--line-dark)}
-.figure-tools{display:grid;grid-template-columns:repeat(3,minmax(140px,210px));gap:12px;padding:18px 20px;border-bottom:1px solid var(--line);align-items:end;background:var(--surface-2)}
-.field label{display:block;margin:0 0 7px;font:500 9px var(--mono);letter-spacing:.11em;text-transform:uppercase;color:var(--faint)}
-.field select,.field input{width:100%;height:40px;border:1px solid var(--line-dark);background:var(--surface);padding:0 34px 0 12px;border-radius:7px;outline:none;font-size:11px;transition:border-color .2s ease,background .2s ease,box-shadow .2s ease}
-.field select:hover,.field input:hover{border-color:var(--line-dark)}
-.field select:focus,.field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
-.plot-wrap{position:relative;height:610px;padding:22px 20px 10px;background:var(--surface)}
-.plot-wrap canvas{display:block;width:100%;height:100%;cursor:crosshair}
-.tooltip{display:none;position:absolute;z-index:5;pointer-events:none;width:max-content;max-width:calc(100% - 16px);padding:10px 12px;background:#26312c;border:1px solid #26312c;border-radius:7px;box-shadow:0 8px 20px rgba(38,49,44,.16);color:#f8f5ee;font-size:10px;line-height:1.65;white-space:normal}
-.tooltip b{font-weight:600;color:#fff}
-.figure-foot{display:flex;justify-content:space-between;gap:24px;padding:14px 20px;border-top:1px solid var(--line);background:var(--surface-2)}
-.legend{display:flex;gap:9px 17px;flex-wrap:wrap}
-.legend span{display:flex;align-items:center;gap:6px;font:400 9px var(--mono);letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
-.legend i{display:block;width:7px;height:7px;border-radius:50%}
-.figure-note{font-size:10px;line-height:1.6;color:var(--faint);text-align:right;max-width:450px}
-.selected-note{min-height:18px;margin-top:13px;font:400 10px var(--mono);color:var(--faint)}
-.selected-note a{color:var(--accent);text-underline-offset:4px}
-.player-find{position:relative;max-width:560px;margin-bottom:34px}
-.player-find input{width:100%;height:52px;background:var(--surface);border:1px solid var(--line-dark);border-radius:8px;outline:none;padding:0 46px 0 15px;font-size:13px;transition:border-color .2s ease,box-shadow .2s ease}
-.player-find input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
-.player-find::after{content:"⌕";position:absolute;right:16px;top:28px;color:var(--muted);font-size:20px;pointer-events:none}
-.search-results{display:none;position:absolute;z-index:10;left:0;right:0;top:58px;background:var(--surface);border:1px solid var(--line-dark);border-radius:8px;box-shadow:0 10px 28px rgba(67,59,47,.12);max-height:340px;overflow:auto}
-.search-results.open{display:block}
-.search-row{width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;border:0;border-bottom:1px solid var(--line);background:transparent;text-align:left;padding:12px 14px}
-.search-row:last-child{border-bottom:0}
-.search-row:hover,.search-row:focus-visible{background:var(--accent-soft);outline:0}
-.search-row strong{display:block;font-size:12px}
-.search-row span{display:block;font-size:10px;color:var(--muted);margin-top:2px}
-.search-row code{font:400 10px var(--mono);color:var(--accent)}
-.profile{display:none}
-.profile.visible{display:block}
-.profile-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:28px;align-items:start;padding:28px 0 24px;border-top:1px solid var(--line)}
-.profile-head h3{font:500 clamp(34px,4vw,52px)/1 var(--sans);letter-spacing:-.045em}
-.profile-meta{margin-top:9px;font-size:11px;color:var(--muted)}
-.profile-context{margin-top:13px;font:400 9px/1.7 var(--mono);color:var(--faint)}
-.signal-score{text-align:right}
-.signal-score strong{display:block;font:500 48px/.9 var(--sans);letter-spacing:-.05em;color:var(--accent)}
-.signal-score span{font:400 9px var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--faint)}
-.metrics{display:grid;grid-template-columns:repeat(4,1fr);background:var(--surface);border:1px solid var(--line-dark);border-radius:10px;box-shadow:none;overflow:hidden}
-.metric{padding:18px;border-right:1px solid var(--line)}
-.metric:last-child{border-right:0}
-.metric strong{display:block;font:500 24px/1 var(--sans);letter-spacing:-.035em}
-.metric span{display:block;margin-top:7px;font:400 9px/1.45 var(--mono);text-transform:uppercase;letter-spacing:.05em;color:var(--faint)}
-.trajectory-head{display:flex;justify-content:space-between;gap:24px;align-items:end;margin:34px 0 12px}
-.trajectory-head h3{font-size:13px;font-weight:600}
-.trajectory-head p{font-size:10px;color:var(--muted);margin-top:3px}
-.trajectory-actions{display:flex;align-items:center;gap:12px}
-.trajectory-period{font:400 9px var(--mono);color:var(--faint);white-space:nowrap}
-.view-toggle{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
-.view-toggle button{height:34px;padding:0 12px;border:0;border-right:1px solid var(--line);background:transparent;font:400 9px var(--mono);letter-spacing:.04em;text-transform:uppercase;color:var(--muted);transition:background .2s,color .2s}
-.view-toggle button:last-child{border-right:0}
-.view-toggle button:hover{color:var(--ink);background:var(--accent-soft)}
-.view-toggle button.active{background:var(--accent);color:#fff}
-.selection-summary{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:center;margin-top:14px;padding:13px 15px;border:1px solid #c9dbd2;border-left:3px solid var(--accent);border-radius:0 8px 8px 0;background:var(--accent-soft);font-size:10px;line-height:1.65;color:var(--muted)}
-.selection-summary strong{color:var(--ink);font-weight:600}
-.selection-summary code{font:500 9px var(--mono);color:var(--accent);white-space:nowrap}
-.trajectory-wrap{height:450px;position:relative;background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:none;overflow:hidden}
-.trajectory-wrap svg{display:block;width:100%;height:100%}
-.moves{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}
-.move{padding:6px 9px;border:1px solid var(--line);border-radius:999px;background:var(--surface);font-size:9px;color:var(--muted)}
-.move b{color:var(--ink);font-weight:500}
-.empty-profile{padding:56px 0;border-top:1px solid var(--line);color:var(--muted);font-size:12px}
-@keyframes introIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
-.intro .kicker{animation:introIn .65s .05s both}.intro h1{animation:introIn .75s .12s both}.intro .abstract{animation:introIn .8s .22s both}
-@supports(animation-timeline:view()){
-  .study-section>.shell{animation:sectionIn both linear;animation-timeline:view();animation-range:entry 4% cover 24%}
-  @keyframes sectionIn{from{opacity:.25;transform:translateY(24px)}to{opacity:1;transform:none}}
-}
-@media(max-width:900px){
-  .intro{min-height:auto;padding:92px 0 64px}.section-head{grid-template-columns:68px 1fr}.section-head p{grid-column:2}
-  .figure-tools{grid-template-columns:1fr 1fr}.plot-wrap{height:520px}
-}
-@media(max-width:640px){
-  .shell,.reading{width:min(100% - 28px,1280px)}
-  .intro{padding:72px 0 48px}.intro h1{font-size:clamp(42px,14vw,62px)}.abstract{grid-template-columns:1fr;gap:14px;margin-top:34px}
-  .study-section{padding:62px 0}.section-head{grid-template-columns:1fr;gap:10px;margin-bottom:24px}.section-head p{grid-column:1}.section-number{padding-top:0}
-  .figure-tools{grid-template-columns:1fr;padding:15px}.plot-wrap{height:470px;padding:12px 8px 4px}
-  .figure-foot{flex-direction:column}.figure-note{text-align:left}.profile-head{grid-template-columns:1fr}.signal-score{text-align:left}
-  .metrics{grid-template-columns:1fr 1fr}.metric:nth-child(2){border-right:0}.metric:nth-child(-n+2){border-bottom:1px solid var(--line)}
-  .trajectory-head{align-items:flex-start;flex-direction:column}.trajectory-actions{width:100%;align-items:flex-start;flex-direction:column-reverse}.view-toggle{width:100%}.view-toggle button{flex:1}
-  .selection-summary{grid-template-columns:1fr;gap:4px}.selection-summary code{white-space:normal}.trajectory-wrap{height:380px}
-}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.intro .kicker,.intro h1,.intro .abstract{animation:none}.figure{transition:none}}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Statistical monitoring of playing time for players aged 16 to 23 across 16 top-flight leagues, 2019–2026.">
+  <meta name="theme-color" content="#f4efe4">
+  <title>Who Gets a Chance Before 24?</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f4efe4'/%3E%3Cpath d='M4 24h4l5-9 5 4 6-12 4 3' fill='none' stroke='%2306478f' stroke-width='3' stroke-linejoin='round'/%3E%3Ccircle cx='24' cy='7' r='3.5' fill='%23e0a800' stroke='%231a1814'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="html/styles.css">
 </head>
-<body>
-<main id="top">
-  <section class="intro">
-    <div class="reading">
-      <div class="kicker">Estudo longitudinal · futebol profissional</div>
-      <h1>Minutagem e oportunidade entre jogadores de 16 a 23 anos</h1>
-      <div class="abstract">
-        <p>Quando jovens ganham, sustentam e perdem espaço em 16 primeiras divisões.</p>
-        <p>O sinal descreve decisões de seleção. Não mede talento ou desempenho.</p>
+<body class="loading">
+  <a class="skip-link" href="#distribution">Skip to the charts</a>
+
+  <main>
+    <!-- 1. Opening: title, introduction, authorship and one real trajectory -->
+    <header class="hero" id="top">
+      <div class="shell">
+        <div class="hero-grid">
+          <div>
+            <h1>Who gets a <em>chance</em> before 24?</h1>
+            <p class="deck">
+              Round by round, this tracks the playing time of <strong><span data-stat="players">18,681</span> players aged 16 to 23</strong>
+              across <span data-stat="leagues">16</span> top-flight leagues, using Transfermarkt data from 2019 to 2026. Each selection
+              decision is compared with players of the same league, season and age, and the result becomes a continuous opportunity
+              signal that shows when a young player gains, holds or loses a place. The signal describes coaches’ choices, not talent
+              or performance.
+            </p>
+            <div class="byline">
+              <span class="label">Gabriel Carbinatto</span>
+              <a class="button button--solid" href="https://www.linkedin.com/in/gabriel-carbinatto/" target="_blank" rel="noopener noreferrer">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V8.98h3.42v1.57h.05c.47-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.29ZM5.32 7.41a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12Zm1.78 13.04H3.54V8.98H7.1v11.47Z"/></svg>
+                LinkedIn
+              </a>
+              <a class="button" href="https://github.com/gcarbs1/statistical-player-opportunity-monitoring" target="_blank" rel="noopener noreferrer">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .7A11.5 11.5 0 0 0 8.36 23.1c.58.1.79-.25.79-.56v-2.02c-3.22.7-3.9-1.37-3.9-1.37-.52-1.34-1.28-1.7-1.28-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.76 2.7 1.25 3.36.95.1-.75.4-1.25.73-1.54-2.57-.3-5.27-1.29-5.27-5.69 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.16 1.18a10.93 10.93 0 0 1 5.75 0c2.19-1.49 3.15-1.18 3.15-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.42-2.71 5.39-5.29 5.68.42.36.79 1.07.79 2.16v3.04c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .7Z"/></svg>
+                GitHub
+              </a>
+            </div>
+            <div class="load-error" id="loadError" hidden></div>
+          </div>
+
+          <figure class="hero-art">
+            <svg id="heroArt" viewBox="0 0 560 300" role="img" aria-label="Illustration: minutes per round grow over a run of selection decisions, the opportunity signal rises with them, and a gold dot marks the early watch."></svg>
+            <figcaption class="hero-art__foot label">
+              <span class="key"><i></i>Opportunity signal</span>
+              <span class="key"><i class="bar"></i>Minutes per round</span>
+              <span class="key"><i class="dot"></i>Early watch</span>
+            </figcaption>
+          </figure>
+        </div>
       </div>
-    </div>
-  </section>
+    </header>
 
-  <section class="study-section" id="distribution">
-    <div class="shell">
-      <div class="section-head">
-        <div class="section-number">FIGURA 01</div>
-        <h2>Distribuição entre idade e oportunidade</h2>
-        <p>O pico de oportunidade de cada jogador, por idade.</p>
+    <!-- 2. Figure 01: age and value of each player's highest signal -->
+    <section class="chapter" id="distribution" aria-labelledby="fig1Title">
+      <div class="shell">
+        <div class="chapter-head">
+          <span class="chapter-number">01</span>
+          <h2 id="fig1Title">The strongest signals come between <em>18 and 20</em></h2>
+          <p>Each dot is a player at the moment of their highest opportunity signal: a smoothed average (EWMA) of how much more they played
+            than peers of the same league, season and age. Of the <strong data-stat="top5">809</strong> players in the top 5%,
+            <strong data-stat="top5Share">82%</strong> peaked between ages 18 and 20.</p>
+        </div>
+
+        <figure class="figure">
+          <div class="figure-tools">
+            <div class="field">
+              <label class="label" for="distHighlight">Highlight</label>
+              <select id="distHighlight">
+                <option value="top5">Top 5% signals</option>
+                <option value="top1">Top 1% signals</option>
+                <optgroup label="League of the highest signal" id="distLeagues"></optgroup>
+              </select>
+            </div>
+            <div class="field">
+              <label class="label" for="distPosition">Position</label>
+              <select id="distPosition" data-positions></select>
+            </div>
+          </div>
+          <div class="plot" id="distWrap">
+            <canvas id="distCanvas" role="img" aria-label="Scatter plot with one dot per player: age at the highest opportunity signal on the horizontal axis and the value of that signal on the vertical axis. The top 5% signals are blue and cluster between ages 18 and 20."></canvas>
+            <div class="tooltip" id="distTip" role="status"></div>
+          </div>
+          <figcaption class="figure-foot">
+            <div class="legend label" id="distLegend"></div>
+            <p class="figure-note">Players with at least eight decisions; the signal starts at the fifth. The vertical clusters just before each birthday come from adjusting by whole-year age: peaks are <span data-stat="birthdayRatio">1.8×</span> more frequent in the last tenth of a year of age than in the first.</p>
+          </figcaption>
+          <details class="table-toggle">
+            <summary><span class="label">Show the 25 strongest highlighted signals as a table</span></summary>
+            <div class="table-scroll" id="distTable"></div>
+          </details>
+        </figure>
+        <p class="figure-status" data-status>Click a dot or open the table to see the player’s trajectory.</p>
       </div>
+    </section>
 
-      <figure class="figure">
-        <div class="figure-tools">
-          <div class="field">
-            <label for="leagueFilter">Liga no maior sinal</label>
-            <select id="leagueFilter"><option value="">Todas as ligas</option></select>
-          </div>
-          <div class="field">
-            <label for="positionFilter">Posição</label>
-            <select id="positionFilter">
-              <option value="">Todas as posições</option>
-              <option value="Goalkeeper">Goleiro</option>
-              <option value="Defender">Defensor</option>
-              <option value="Midfield">Meio-campo</option>
-              <option value="Attack">Ataque</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="scoreFilter">Percentil mínimo</label>
-            <select id="scoreFilter">
-              <option value="0">Todos</option>
-              <option value="75">75</option>
-              <option value="90">90</option>
-              <option value="95">95</option>
-              <option value="99">99</option>
-            </select>
-          </div>
+    <!-- 3. Figure 02: leaders of one league and season -->
+    <section class="chapter" id="season" aria-labelledby="fig2Title">
+      <div class="shell">
+        <div class="chapter-head">
+          <span class="chapter-number">02</span>
+          <h2 id="fig2Title">Who got the most room in <em>each season</em></h2>
+          <p>Each player’s highest signal within one league and season. The top five are named; everyone else stays grey for comparison.</p>
         </div>
-        <div class="plot-wrap" id="plotWrap">
-          <canvas id="signalPlot" role="img" aria-label="Dispersão dos jogadores por idade e maior EWMA de oportunidade"></canvas>
-          <div class="tooltip" id="plotTip"></div>
-        </div>
-        <figcaption class="figure-foot">
-          <div class="legend" id="legend"></div>
-          <div class="figure-note">Ao menos oito decisões observadas; sinal calculado após a quinta.</div>
-        </figcaption>
-      </figure>
-      <div class="selected-note" id="selectedNote">Clique em um ponto para abrir a trajetória individual.</div>
-    </div>
-  </section>
 
-  <section class="study-section" id="season-leaders">
-    <div class="shell">
-      <div class="section-head">
-        <div class="section-number">FIGURA 02</div>
-        <h2>Destaques da temporada</h2>
-        <p>Os maiores sinais na liga e temporada selecionadas.</p>
+        <figure class="figure">
+          <div class="figure-tools">
+            <div class="field">
+              <label class="label" for="seasonLeague">League</label>
+              <select id="seasonLeague" data-leagues></select>
+            </div>
+            <div class="field">
+              <label class="label" for="seasonSelect">Season</label>
+              <select id="seasonSelect"></select>
+            </div>
+            <div class="field">
+              <label class="label" for="seasonPosition">Position</label>
+              <select id="seasonPosition" data-positions></select>
+            </div>
+          </div>
+          <div class="plot" id="seasonWrap">
+            <canvas id="seasonCanvas" role="img" aria-label="Scatter plot for the selected league and season: age at the peak on the horizontal axis and highest signal in the season on the vertical axis. The five strongest signals are blue and labelled."></canvas>
+            <div class="tooltip" id="seasonTip" role="status"></div>
+          </div>
+          <figcaption class="figure-foot">
+            <div class="legend label">
+              <span class="key"><i class="blue"></i>Top five signals</span>
+              <span class="key"><i class="grey"></i>Other eligible players</span>
+            </div>
+            <p class="figure-note">At least three decisions and positive minutes in the season.</p>
+          </figcaption>
+          <details class="table-toggle">
+            <summary><span class="label">Show the season’s top 25 as a table</span></summary>
+            <div class="table-scroll" id="seasonTable"></div>
+          </details>
+        </figure>
+        <p class="figure-status" data-status>Click a dot or open the table to see the player’s trajectory.</p>
       </div>
+    </section>
 
-      <figure class="figure">
-        <div class="figure-tools">
-          <div class="field">
-            <label for="leaderLeague">Liga</label>
-            <select id="leaderLeague"></select>
-          </div>
-          <div class="field">
-            <label for="leaderSeason">Temporada</label>
-            <select id="leaderSeason"></select>
-          </div>
-          <div class="field">
-            <label for="leaderPosition">Posição</label>
-            <select id="leaderPosition">
-              <option value="">Todas as posições</option>
-              <option value="Goalkeeper">Goleiro</option>
-              <option value="Defender">Defensor</option>
-              <option value="Midfield">Meio-campo</option>
-              <option value="Attack">Ataque</option>
-            </select>
-          </div>
+    <!-- 4. Figure 03: one player's trajectory -->
+    <section class="chapter" id="trajectory-section" aria-labelledby="fig3Title">
+      <div class="shell">
+        <div class="chapter-head">
+          <span class="chapter-number">03</span>
+          <h2 id="fig3Title">One career, <em>decision by decision</em></h2>
+          <p>The line follows the signal across every observed decision and does not reset when a player changes club. Bands mark each club spell and the gold dot marks the early watch.</p>
         </div>
-        <div class="plot-wrap" id="leaderPlotWrap">
-          <canvas id="leaderPlot" role="img" aria-label="Dispersão por idade e maior EWMA da temporada"></canvas>
-          <div class="tooltip" id="leaderPlotTip"></div>
-        </div>
-        <figcaption class="figure-foot">
-          <div class="legend"><span><i style="background:#2f6b59"></i>Jogadores elegíveis</span></div>
-          <div class="figure-note">Ao menos três decisões e minutagem positiva. O sinal não mede desempenho.</div>
-        </figcaption>
-      </figure>
-      <div class="selected-note" id="leaderSelectedNote">Clique em um jogador para abrir sua trajetória completa.</div>
-    </div>
-  </section>
 
-  <section class="study-section" id="player">
-    <div class="shell">
-      <div class="section-head">
-        <div class="section-number">FIGURA 03</div>
-        <h2>Trajetória individual</h2>
-        <p>Uma linha contínua de oportunidade; cores marcam os clubes.</p>
+        <div class="search">
+          <label class="label" for="playerSearch">Search player or club</label>
+          <input id="playerSearch" type="search" autocomplete="off" placeholder="e.g. Estêvão, Bragantino, Lamine Yamal" aria-controls="searchResults" aria-expanded="false">
+          <div class="search-results" id="searchResults" role="listbox"></div>
+        </div>
+
+        <article id="profile" aria-live="polite"></article>
       </div>
+    </section>
 
-      <div class="player-find">
-        <label class="kicker" for="playerSearch">Localizar jogador</label>
-        <input id="playerSearch" type="search" autocomplete="off" placeholder="Nome do jogador ou clube">
-        <div class="search-results" id="searchResults"></div>
+    <!-- 5. Figure 04: each player's first early watch -->
+    <section class="chapter" id="watches" aria-labelledby="fig4Title">
+      <div class="shell">
+        <div class="chapter-head">
+          <span class="chapter-number">04</span>
+          <h2 id="fig4Title">Half of all early watches come within <em><span data-stat="watchMinutes">180</span> minutes</em></h2>
+          <p>An early watch flags the first unusually fast rise in opportunity: two of up to three consecutive decisions with a residual of at least +0.75.
+            <strong data-stat="watches">8,617</strong> players had one; the median comes at <strong data-stat="watchAge">20.9 years</strong>,
+            after <strong data-stat="watchRounds">10 decisions</strong>.</p>
+        </div>
+
+        <figure class="figure">
+          <div class="figure-tools">
+            <div class="field">
+              <label class="label" for="watchLeague">League of the watch</label>
+              <select id="watchLeague" data-leagues data-all="All leagues"></select>
+            </div>
+            <div class="field">
+              <label class="label" for="watchSeason">Season of the watch</label>
+              <select id="watchSeason"></select>
+            </div>
+            <div class="field">
+              <label class="label" for="watchPosition">Position</label>
+              <select id="watchPosition" data-positions></select>
+            </div>
+          </div>
+          <div class="plot" id="watchWrap">
+            <canvas id="watchCanvas" role="img" aria-label="Scatter plot with one dot per early watch: age at the watch on the horizontal axis and cumulative minutes before it on the vertical axis, on a log scale. Dashed lines mark the medians; half of all watches come within about 180 minutes."></canvas>
+            <div class="tooltip" id="watchTip" role="status"></div>
+          </div>
+          <figcaption class="figure-foot">
+            <div class="legend label">
+              <span class="key"><i class="blue"></i>One player at their first watch</span>
+              <span class="key"><i style="width:14px;height:0;border-top:1px dashed var(--ink);background:none"></i>Median of the filter</span>
+            </div>
+            <p class="figure-note">At most one watch per player, with positive cumulative minutes. Vertical axis on a log scale.</p>
+          </figcaption>
+          <details class="table-toggle">
+            <summary><span class="label">Show the 25 youngest watches in the filter as a table</span></summary>
+            <div class="table-scroll" id="watchTable"></div>
+          </details>
+        </figure>
+        <p class="figure-status" data-status>Click a dot or open the table to see the player’s trajectory.</p>
       </div>
+    </section>
 
-      <div class="empty-profile" id="emptyProfile">Selecione um jogador na distribuição ou utilize a busca.</div>
-      <article class="profile" id="profile" aria-live="polite"></article>
-    </div>
-  </section>
+    <!-- 6. Figure 05: what happened after the watch -->
+    <section class="chapter" id="momentum" aria-labelledby="fig5Title">
+      <div class="shell">
+        <div class="chapter-head">
+          <span class="chapter-number">05</span>
+          <h2 id="fig5Title">After the watch, more players <em class="is-red">lose</em> ground than gain it</h2>
+          <p>Among the <strong data-stat="momentum">2,112</strong> players with a watch and comparable recent data, <strong data-stat="declineShare">56%</strong>
+            have a falling signal over their five most recent decisions. Larger dots went longer without minutes.</p>
+        </div>
 
-  <section class="study-section" id="cohorts">
-    <div class="shell">
-      <div class="section-head">
-        <div class="section-number">FIGURA 04</div>
-        <h2>Watches precoces</h2>
-        <p>O primeiro sinal incomum de oportunidade na carreira observada.</p>
+        <figure class="figure">
+          <div class="figure-tools">
+            <div class="field">
+              <label class="label" for="momentLeague">Current league</label>
+              <select id="momentLeague" data-leagues data-all="All leagues"></select>
+            </div>
+            <div class="field">
+              <label class="label" for="momentPosition">Position</label>
+              <select id="momentPosition" data-positions></select>
+            </div>
+            <div class="field">
+              <label class="label" for="momentState">Recent movement</label>
+              <select id="momentState">
+                <option value="">All</option>
+                <option value="growth">Signal rising</option>
+                <option value="decline">Signal falling</option>
+                <option value="unused">No minutes in the last 5</option>
+              </select>
+            </div>
+          </div>
+          <div class="plot" id="momentWrap">
+            <canvas id="momentCanvas" role="img" aria-label="Scatter plot: highest career signal on the horizontal axis and change in the signal over the five most recent decisions on the vertical axis. Blue dots are rising and red dots are falling; red dots outnumber blue ones."></canvas>
+            <div class="tooltip" id="momentTip" role="status"></div>
+          </div>
+          <figcaption class="figure-foot">
+            <div class="legend label">
+              <span class="key"><i class="blue"></i>Signal rising</span>
+              <span class="key"><i class="red"></i>Signal falling</span>
+              <span class="key">Size = share of recent minutes not played</span>
+            </div>
+            <p class="figure-note">Change between the signal before the five recent decisions and the current signal.</p>
+          </figcaption>
+          <details class="table-toggle">
+            <summary><span class="label">Show the 25 largest changes in the filter as a table</span></summary>
+            <div class="table-scroll" id="momentTable"></div>
+          </details>
+        </figure>
+        <p class="figure-status" data-status>Click a dot or open the table to see the player’s trajectory.</p>
       </div>
+    </section>
+  </main>
 
-      <figure class="figure">
-        <div class="figure-tools">
-          <div class="field">
-            <label for="cohortLeague">Liga no watch</label>
-            <select id="cohortLeague"><option value="">Todas as ligas</option></select>
-          </div>
-          <div class="field">
-            <label for="cohortSeason">Temporada do watch</label>
-            <select id="cohortSeason"><option value="">Todas as temporadas</option></select>
-          </div>
-          <div class="field">
-            <label for="cohortPosition">Posição</label>
-            <select id="cohortPosition">
-              <option value="">Todas as posições</option>
-              <option value="Goalkeeper">Goleiro</option>
-              <option value="Defender">Defensor</option>
-              <option value="Midfield">Meio-campo</option>
-              <option value="Attack">Ataque</option>
-            </select>
-          </div>
-        </div>
-        <div class="plot-wrap" id="cohortPlotWrap">
-          <canvas id="cohortPlot" role="img" aria-label="Dispersão da idade e dos minutos necessários para cada watch precoce"></canvas>
-          <div class="tooltip" id="cohortPlotTip"></div>
-        </div>
-        <figcaption class="figure-foot">
-          <div class="legend" id="cohortLegend">
-            <span><i style="background:#2f6b59"></i>Primeiro watch da carreira</span>
-          </div>
-          <div class="figure-note">Duas observações com residual ≥ +0,75 em até três decisões. Um watch por jogador.</div>
-        </figcaption>
-      </figure>
-      <div class="selected-note" id="cohortSelectedNote">Clique em um ponto para abrir a trajetória individual.</div>
-    </div>
-  </section>
-
-  <section class="study-section" id="monitor">
-    <div class="shell">
-      <div class="section-head">
-        <div class="section-number">FIGURA 05</div>
-        <h2>Maior EWMA × mudança recente</h2>
-        <p>Maior patamar da carreira × mudança nas cinco decisões recentes.</p>
-      </div>
-
-      <figure class="figure">
-        <div class="figure-tools">
-          <div class="field">
-            <label for="monitorLeague">Liga atual observada</label>
-            <select id="monitorLeague"><option value="">Todas as ligas</option></select>
-          </div>
-          <div class="field">
-            <label for="monitorPosition">Posição</label>
-            <select id="monitorPosition">
-              <option value="">Todas as posições</option>
-              <option value="Goalkeeper">Goleiro</option>
-              <option value="Defender">Defensor</option>
-              <option value="Midfield">Meio-campo</option>
-              <option value="Attack">Ataque</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="monitorState">Movimento da EWMA</label>
-            <select id="monitorState">
-              <option value="" selected>Todos os comparáveis</option>
-              <option value="growth">Em crescimento</option>
-              <option value="decline">Em queda</option>
-              <option value="unused">Sem minutos nas 5 recentes</option>
-            </select>
-          </div>
-        </div>
-        <div class="plot-wrap" id="monitorPlotWrap">
-          <canvas id="monitorPlot" role="img" aria-label="Dispersão do maior EWMA histórico e da mudança até a EWMA atual"></canvas>
-          <div class="tooltip" id="monitorPlotTip"></div>
-        </div>
-        <figcaption class="figure-foot">
-          <div class="legend"><span><i style="background:#28766a"></i>EWMA em crescimento</span><span><i style="background:#b64c3b"></i>EWMA em queda</span></div>
-        </figcaption>
-      </figure>
-      <div class="selected-note" id="usageSelectedNote">Clique em um ponto para abrir a trajetória individual.</div>
-    </div>
-  </section>
-
-</main>
-
-<script>
-(function(){
-  "use strict";
-
-  var COLORS={"ENG-1":"#6957c7","SPA-1":"#a86400","GER-1":"#b83d73","ITA-1":"#168762","FRA-1":"#1565c0","POR-1":"#087f8c","BR-1":"#cf4436","NED-1":"#bd570b","BEL-1":"#857100","ARG-1":"#287bb5","COL-1":"#ba4b41","PAR-1":"#7550b8","URU-1":"#218b9b","KSA-1":"#18865c","MEX-1":"#ad3569","USA-1":"#526f91"};
-  var CHART={axis:"#6f746c",grid:"#e8dfcf",zero:"#b5aa98",accent:"#2f6b59",growth:"#28766a",decline:"#b64c3b",selected:"#20231f",fallback:"#72766f"};
-  var FLAGS={"ENG-1":"🇬🇧","SPA-1":"🇪🇸","GER-1":"🇩🇪","ITA-1":"🇮🇹","FRA-1":"🇫🇷","POR-1":"🇵🇹","BR-1":"🇧🇷","NED-1":"🇳🇱","BEL-1":"🇧🇪","ARG-1":"🇦🇷","COL-1":"🇨🇴","PAR-1":"🇵🇾","URU-1":"🇺🇾","KSA-1":"🇸🇦","MEX-1":"🇲🇽","USA-1":"🇺🇸"};
-  var fmt=new Intl.NumberFormat("pt-BR");
-  var DATA=null,PLAYERS=[],PLAYER_BY_ID={},WATCHES_DATA=[],SEASON_DATA=[],LEAGUES=[],CLUBS=[],FILTERED=[],POINTS=[],SEASON_FILTERED=[],SEASON_POINTS=[],COHORT_FILTERED=[],COHORT_POINTS=[],USAGE_FILTERED=[],USAGE_POINTS=[],ACTIVE=null,TRAJECTORY_MODE="signal";
-  var els={
-    league:document.getElementById("leagueFilter"),
-    position:document.getElementById("positionFilter"),
-    score:document.getElementById("scoreFilter"),
-    canvas:document.getElementById("signalPlot"),
-    wrap:document.getElementById("plotWrap"),
-    tip:document.getElementById("plotTip"),
-    selected:document.getElementById("selectedNote"),
-    search:document.getElementById("playerSearch"),
-    results:document.getElementById("searchResults"),
-    empty:document.getElementById("emptyProfile"),
-    profile:document.getElementById("profile"),
-    leaderLeague:document.getElementById("leaderLeague"),
-    leaderSeason:document.getElementById("leaderSeason"),
-    leaderPosition:document.getElementById("leaderPosition"),
-    leaderCanvas:document.getElementById("leaderPlot"),
-    leaderWrap:document.getElementById("leaderPlotWrap"),
-    leaderTip:document.getElementById("leaderPlotTip"),
-    leaderSelected:document.getElementById("leaderSelectedNote"),
-    cohortLeague:document.getElementById("cohortLeague"),
-    cohortSeason:document.getElementById("cohortSeason"),
-    cohortPosition:document.getElementById("cohortPosition"),
-    cohortCanvas:document.getElementById("cohortPlot"),
-    cohortWrap:document.getElementById("cohortPlotWrap"),
-    cohortTip:document.getElementById("cohortPlotTip"),
-    cohortSelected:document.getElementById("cohortSelectedNote"),
-    monitorLeague:document.getElementById("monitorLeague"),
-    monitorPosition:document.getElementById("monitorPosition"),
-    monitorState:document.getElementById("monitorState"),
-    monitorCanvas:document.getElementById("monitorPlot"),
-    monitorWrap:document.getElementById("monitorPlotWrap"),
-    monitorTip:document.getElementById("monitorPlotTip"),
-    usageSelected:document.getElementById("usageSelectedNote")
-  };
-
-  function placeTooltip(tip,wrap,event){
-    var rect=wrap.getBoundingClientRect();
-    var margin=8,gap=12;
-    tip.style.display="block";
-    tip.style.transform="none";
-    tip.style.left=margin+"px";
-    tip.style.top=margin+"px";
-    var box=tip.getBoundingClientRect();
-    var pointerX=event.clientX-rect.left;
-    var pointerY=event.clientY-rect.top;
-    var maxLeft=Math.max(margin,rect.width-box.width-margin);
-    var maxTop=Math.max(margin,rect.height-box.height-margin);
-    var left=Math.max(margin,Math.min(maxLeft,pointerX-box.width/2));
-    var top=pointerY-box.height-gap;
-    if(top<margin)top=pointerY+gap;
-    top=Math.max(margin,Math.min(maxTop,top));
-    tip.style.left=left+"px";
-    tip.style.top=top+"px";
-  }
-
-  function esc(value){
-    return String(value==null?"":value).replace(/[&<>"']/g,function(c){
-      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
-    });
-  }
-  function fold(value){
-    return String(value==null?"":value).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
-  }
-  function withoutDashes(value){
-    return String(value==null?"":value).replace(/\s*[—–]\s*/g," ");
-  }
-  function leagueName(code){
-    var found=LEAGUES.find(function(item){return item.id===code;});
-    return found?withoutDashes(found.name):(code||"n/d");
-  }
-  var CLUB_COLORS={};
-  function clubColor(club){
-    var key=String(club||"clube");
-    if(CLUB_COLORS[key])return CLUB_COLORS[key];
-    var hash=2166136261;
-    for(var i=0;i<key.length;i++){
-      hash^=key.charCodeAt(i);
-      hash=Math.imul(hash,16777619);
-    }
-    var hue=(hash>>>0)%360;
-    var saturation=58+((hash>>>8)&15);
-    var lightness=58+((hash>>>16)&9);
-    CLUB_COLORS[key]="hsl("+hue+","+saturation+"%,"+lightness+"%)";
-    return CLUB_COLORS[key];
-  }
-  function positionName(value){
-    return {Goalkeeper:"Goleiro",Defender:"Defensor",Midfield:"Meio-campo",Attack:"Ataque"}[value]||value||"n/d";
-  }
-  function decodeHistory(player){
-    return player.history.map(function(h){
-      var monitorIndex=DATA.historySchema.indexOf("monitoring_ewma_x100");
-      return {date:h[0],age:h[1]/1000,league:LEAGUES[h[2]].id,club:CLUBS[h[3]],minutes:h[4],share:h[5]/1000,percentile:h[6]/1000,peerZ:h[7]/100,ewma:h[8]/100,cusum:h[9]/100,watchNumber:h[10]||0,monitorEwma:monitorIndex<0||h[monitorIndex]==null?h[8]/100:h[monitorIndex]/100};
-    });
-  }
-
-  function indexWatchSeasons(){
-    var windows=[],seen={};
-    SEASON_DATA.forEach(function(row){
-      var key=row.league+"\u0000"+row.seasonId;
-      if(seen[key])return;
-      seen[key]=true;
-      windows.push({league:row.league,id:row.seasonId,label:row.seasonLabel,start:row.seasonStart,end:row.seasonEnd});
-    });
-    WATCHES_DATA.forEach(function(watch){
-      var season=windows.find(function(row){
-        return row.league===watch.league&&row.start<=watch.date&&watch.date<=row.end;
-      });
-      if(!season)return;
-      watch.seasonId=season.id;
-      watch.seasonLabel=season.label;
-      watch.seasonStart=season.start;
-    });
-  }
-
-  fetch("assets/player_opportunity_explorer.json",{cache:"no-store"})
-    .then(function(response){if(!response.ok)throw Error("Falha ao carregar a base.");return response.json();})
-    .then(function(data){
-      DATA=data;PLAYERS=data.players;WATCHES_DATA=data.watches||[];SEASON_DATA=data.seasonLeaders||[];LEAGUES=data.leagues;CLUBS=data.clubs;
-      indexWatchSeasons();
-      PLAYERS.forEach(function(player){PLAYER_BY_ID[player.id]=player;});
-      LEAGUES.forEach(function(league){
-        var option=document.createElement("option");
-        option.value=league.id;
-        option.textContent=(FLAGS[league.id]?FLAGS[league.id]+"  ":"")+league.id;
-        els.league.appendChild(option);
-        els.monitorLeague.appendChild(option.cloneNode(true));
-        els.cohortLeague.appendChild(option.cloneNode(true));
-        els.leaderLeague.appendChild(option.cloneNode(true));
-      });
-      document.getElementById("legend").innerHTML=LEAGUES.map(function(league){
-        return '<span><i style="background:'+COLORS[league.id]+'"></i>'+esc(league.id)+"</span>";
-      }).join("");
-      applyFilters();
-      els.leaderLeague.value=LEAGUES.some(function(league){return league.id==="SPA-1";})?"SPA-1":LEAGUES[0].id;
-      populateLeaderSeasons();
-      populateCohortSeasons();
-      applyUsageFilters();
-      if(location.hash)requestAnimationFrame(function(){
-        var target=document.getElementById(location.hash.slice(1));
-        if(target)target.scrollIntoView({block:"start"});
-      });
-    })
-    .catch(function(error){
-      console.error(error);
-      els.selected.textContent="Não foi possível carregar a base. Abra esta pasta por meio de um servidor HTTP local.";
-    });
-
-  function applyFilters(){
-    var league=els.league.value;
-    var position=els.position.value;
-    var minScore=Number(els.score.value);
-    FILTERED=PLAYERS.filter(function(player){
-      return player.score!=null&&player.score>=minScore&&(!league||player.signalLeague===league)&&(!position||player.position===position);
-    });
-    drawDistribution();
-  }
-
-  function distributionScales(width,height){
-    var pad={left:58,right:22,top:18,bottom:48};
-    var yValues=FILTERED.map(function(player){return player.peakEwma;}).filter(Number.isFinite);
-    var yMin=Math.min(0,Math.floor(Math.min.apply(null,yValues.length?yValues:[0])*2)/2);
-    var yMax=Math.max(1,Math.ceil(Math.max.apply(null,yValues.length?yValues:[1])*2)/2);
-    return {
-      pad:pad,
-      x:function(value){return pad.left+(value-DATA.meta.minAge)/(DATA.meta.maxAge+1-DATA.meta.minAge)*(width-pad.left-pad.right);},
-      y:function(value){return pad.top+(yMax-value)/(yMax-yMin)*(height-pad.top-pad.bottom);},
-      yMin:yMin,yMax:yMax
-    };
-  }
-
-  function drawDistribution(){
-    if(!DATA)return;
-    var canvas=els.canvas;
-    var rect=canvas.getBoundingClientRect();
-    var dpr=Math.min(window.devicePixelRatio||1,2);
-    var width=Math.max(1,rect.width),height=Math.max(1,rect.height);
-    canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);
-    var ctx=canvas.getContext("2d");
-    ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,width,height);
-    var scale=distributionScales(width,height),pad=scale.pad;
-    var plotWidth=width-pad.left-pad.right,plotHeight=height-pad.top-pad.bottom;
-
-    ctx.font="10px DM Mono, monospace";
-    ctx.fillStyle=CHART.axis;
-    ctx.strokeStyle=CHART.grid;
-    ctx.lineWidth=1;
-    for(var value=DATA.meta.minAge;value<=DATA.meta.maxAge+1;value++){
-      var x=scale.x(value);
-      ctx.beginPath();ctx.moveTo(x,pad.top);ctx.lineTo(x,height-pad.bottom);ctx.stroke();
-      ctx.textAlign=value===DATA.meta.minAge?"left":(value===DATA.meta.maxAge+1?"right":"center");
-      ctx.fillText(value+" anos",x,height-17);
-    }
-    var step=(scale.yMax-scale.yMin)>4?1:.5;
-    for(var tick=Math.ceil(scale.yMin/step)*step;tick<=scale.yMax+.001;tick+=step){
-      var y=scale.y(tick);
-      ctx.strokeStyle=Math.abs(tick)<.001?CHART.zero:CHART.grid;
-      ctx.beginPath();ctx.moveTo(pad.left,y);ctx.lineTo(width-pad.right,y);ctx.stroke();
-      ctx.fillStyle=CHART.axis;ctx.textAlign="right";
-      ctx.fillText(tick.toFixed(tick%1===0?0:1),pad.left-9,y+3);
-    }
-    ctx.save();
-    ctx.translate(14,pad.top+plotHeight/2);
-    ctx.rotate(-Math.PI/2);ctx.textAlign="center";ctx.fillStyle=CHART.axis;
-    ctx.fillText("MAIOR EWMA PADRONIZADA",0,0);ctx.restore();
-
-    POINTS=[];
-    FILTERED.forEach(function(player){
-      var x=scale.x(player.signalAge),y=scale.y(player.peakEwma);
-      if(!Number.isFinite(x)||!Number.isFinite(y))return;
-      POINTS.push({x:x,y:y,player:player});
-      ctx.globalAlpha=ACTIVE&&ACTIVE.id===player.id?1:.46;
-      ctx.fillStyle=COLORS[player.signalLeague]||CHART.fallback;
-      ctx.beginPath();ctx.arc(x,y,ACTIVE&&ACTIVE.id===player.id?5.2:2.2,0,Math.PI*2);ctx.fill();
-      if(ACTIVE&&ACTIVE.id===player.id){
-        ctx.globalAlpha=1;ctx.strokeStyle=CHART.selected;ctx.lineWidth=1.4;ctx.stroke();
-      }
-    });
-    ctx.globalAlpha=1;
-  }
-
-  function nearestPoint(event){
-    var rect=els.canvas.getBoundingClientRect();
-    var x=event.clientX-rect.left,y=event.clientY-rect.top,best=null,bestDistance=100;
-    POINTS.forEach(function(point){
-      var distance=(point.x-x)*(point.x-x)+(point.y-y)*(point.y-y);
-      if(distance<bestDistance){bestDistance=distance;best=point;}
-    });
-    return best;
-  }
-
-  els.canvas.addEventListener("pointermove",function(event){
-    var point=nearestPoint(event);
-    if(!point){els.tip.style.display="none";return;}
-    var player=point.player;
-    els.tip.innerHTML="<b>"+esc(player.name)+"</b><br>"+esc(leagueName(player.signalLeague))+" · "+player.signalAge.toFixed(2)+" anos<br>EWMA "+player.peakEwma.toFixed(2)+" · percentil "+player.score.toFixed(1);
-    placeTooltip(els.tip,els.wrap,event);
-  });
-  els.canvas.addEventListener("pointerleave",function(){els.tip.style.display="none";});
-  els.canvas.addEventListener("click",function(event){
-    var point=nearestPoint(event);
-    if(!point)return;
-    selectPlayer(point.player,true);
-  });
-
-  function populateLeaderSeasons(){
-    var league=els.leaderLeague.value;
-    var previous=els.leaderSeason.value;
-    var seasons={};
-    SEASON_DATA.forEach(function(row){
-      if(row.league===league&&!seasons[row.seasonId])seasons[row.seasonId]=row;
-    });
-    var ordered=Object.keys(seasons).map(function(key){return seasons[key];}).sort(function(a,b){
-      return b.seasonStart.localeCompare(a.seasonStart);
-    });
-    els.leaderSeason.innerHTML=ordered.map(function(row){
-      return '<option value="'+esc(row.seasonId)+'">'+esc(row.seasonLabel)+"</option>";
-    }).join("");
-    if(ordered.some(function(row){return row.seasonId===previous;}))els.leaderSeason.value=previous;
-    applySeasonFilters();
-  }
-
-  function applySeasonFilters(){
-    if(!DATA)return;
-    var league=els.leaderLeague.value;
-    var season=els.leaderSeason.value;
-    var position=els.leaderPosition.value;
-    var eligible=SEASON_DATA.filter(function(row){
-      return row.league===league&&row.seasonId===season&&(!position||row.position===position);
-    }).sort(function(a,b){return a.rank-b.rank;});
-    SEASON_FILTERED=eligible;
-    drawSeasonPlot();
-  }
-
-  function drawSeasonPlot(){
-    if(!DATA)return;
-    var canvas=els.leaderCanvas;
-    var rect=canvas.getBoundingClientRect();
-    var dpr=Math.min(window.devicePixelRatio||1,2);
-    var width=Math.max(1,rect.width),height=Math.max(1,rect.height);
-    canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);
-    var ctx=canvas.getContext("2d");
-    ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,width,height);
-    var pad={left:64,right:24,top:24,bottom:54};
-    var plotWidth=width-pad.left-pad.right,plotHeight=height-pad.top-pad.bottom;
-    if(!SEASON_FILTERED.length){
-      ctx.fillStyle=CHART.axis;ctx.font="12px Inter, sans-serif";ctx.textAlign="center";
-      ctx.fillText("Nenhum jogador elegível para estes filtros.",width/2,height/2);SEASON_POINTS=[];return;
-    }
-    var xMin=DATA.meta.minAge,xMax=DATA.meta.maxAge+1;
-    var yValues=SEASON_FILTERED.map(function(row){return row.peakEwma;});
-    var yMin=Math.min(0,Math.floor(Math.min.apply(null,yValues)*2)/2);
-    var yMax=Math.max(1,Math.ceil(Math.max.apply(null,yValues)*2)/2);
-    function x(value){return pad.left+(value-xMin)/(xMax-xMin)*plotWidth;}
-    function y(value){return pad.top+(yMax-value)/(yMax-yMin)*plotHeight;}
-
-    ctx.font="10px DM Mono, monospace";ctx.lineWidth=1;
-    for(var age=xMin;age<=xMax;age++){
-      var gx=x(age);ctx.strokeStyle=CHART.grid;
-      ctx.beginPath();ctx.moveTo(gx,pad.top);ctx.lineTo(gx,height-pad.bottom);ctx.stroke();
-      ctx.fillStyle=CHART.axis;
-      ctx.textAlign=age===xMin?"left":(age===xMax?"right":"center");
-      ctx.fillText(age+" anos",gx,height-20);
-    }
-    var step=(yMax-yMin)>4?1:.5;
-    for(var tick=Math.ceil(yMin/step)*step;tick<=yMax+.001;tick+=step){
-      var gy=y(tick);ctx.strokeStyle=Math.abs(tick)<.001?CHART.zero:CHART.grid;
-      ctx.beginPath();ctx.moveTo(pad.left,gy);ctx.lineTo(width-pad.right,gy);ctx.stroke();
-      ctx.fillStyle=CHART.axis;ctx.textAlign="right";
-      ctx.fillText(tick.toFixed(tick%1===0?0:1),pad.left-10,gy+3);
-    }
-    ctx.fillStyle=CHART.axis;ctx.textAlign="center";
-    ctx.fillText("IDADE NO PICO DA TEMPORADA",pad.left+plotWidth/2,height-4);
-    ctx.save();ctx.translate(14,pad.top+plotHeight/2);ctx.rotate(-Math.PI/2);
-    ctx.fillText("MAIOR EWMA NA TEMPORADA",0,0);ctx.restore();
-
-    SEASON_POINTS=[];
-    SEASON_FILTERED.slice().sort(function(a,b){return b.rank-a.rank;}).forEach(function(row){
-      var player=PLAYER_BY_ID[row.playerId];
-      if(!player)return;
-      var px=x(row.peakAge),py=y(row.peakEwma);
-      if(!Number.isFinite(px)||!Number.isFinite(py))return;
-      var selected=ACTIVE&&ACTIVE.id===player.id;
-      ctx.globalAlpha=selected?1:.72;ctx.fillStyle=CHART.accent;
-      ctx.beginPath();ctx.arc(px,py,selected?6:row.rank<=3?4.8:3.3,0,Math.PI*2);ctx.fill();
-      if(ACTIVE&&ACTIVE.id===player.id){ctx.strokeStyle=CHART.selected;ctx.lineWidth=1.4;ctx.stroke();}
-      ctx.globalAlpha=1;
-      SEASON_POINTS.push({x:px,y:py,row:row,player:player});
-    });
-  }
-
-  function nearestSeasonPoint(event){
-    var rect=els.leaderCanvas.getBoundingClientRect();
-    var x=event.clientX-rect.left,y=event.clientY-rect.top,best=null,bestDistance=144;
-    SEASON_POINTS.forEach(function(point){
-      var distance=(point.x-x)*(point.x-x)+(point.y-y)*(point.y-y);
-      if(distance<bestDistance){best=point;bestDistance=distance;}
-    });
-    return best;
-  }
-
-  els.leaderCanvas.addEventListener("pointermove",function(event){
-    var point=nearestSeasonPoint(event);
-    if(!point){els.leaderTip.style.display="none";return;}
-    var row=point.row,player=point.player;
-    els.leaderTip.innerHTML="<b>#"+row.rank+" · "+esc(player.name)+"</b><br>"+esc(row.club)+" · "+esc(row.seasonLabel)+"<br>pico EWMA "+row.peakEwma.toFixed(2)+" · "+row.peakAge.toFixed(2)+" anos · "+esc(row.peakDate)+"<br>"+fmt.format(row.minutes)+" min em "+fmt.format(row.decisions)+" decisões";
-    placeTooltip(els.leaderTip,els.leaderWrap,event);
-  });
-  els.leaderCanvas.addEventListener("pointerleave",function(){els.leaderTip.style.display="none";});
-  els.leaderCanvas.addEventListener("click",function(event){
-    var point=nearestSeasonPoint(event);if(point)selectPlayer(point.player,true);
-  });
-
-  function selectPlayer(player,scroll){
-    if(!player)return;
-    ACTIVE=player;
-    els.search.value=player.name;
-    els.results.classList.remove("open");
-    els.selected.innerHTML='<a href="#player">'+esc(player.name)+" selecionado · consultar trajetória ↓</a>";
-    els.leaderSelected.innerHTML='<a href="#player">'+esc(player.name)+" selecionado · consultar trajetória ↓</a>";
-    els.cohortSelected.innerHTML='<a href="#player">'+esc(player.name)+" selecionado · consultar trajetória ↑</a>";
-    els.usageSelected.innerHTML='<a href="#player">'+esc(player.name)+" selecionado · consultar trajetória ↑</a>";
-    renderProfile(player);
-    drawDistribution();
-    drawSeasonPlot();
-    drawCohortPlot();
-    drawUsagePlot();
-    if(scroll)document.getElementById("player").scrollIntoView({behavior:"smooth",block:"start"});
-  }
-
-  function renderProfile(player){
-    var history=decodeHistory(player),moves=[];
-    var cumulative=0;
-    history.forEach(function(row){cumulative+=row.minutes;row.cumulativeMinutes=cumulative;});
-    for(var i=1;i<history.length;i++){
-      if(history[i].league!==history[i-1].league||history[i].club!==history[i-1].club){
-        moves.push({date:history[i].date,age:history[i].age,fromLeague:history[i-1].league,toLeague:history[i].league,fromClub:history[i-1].club,toClub:history[i].club});
-      }
-    }
-    els.empty.style.display="none";
-    els.profile.classList.add("visible");
-    var moveHtml=moves.length?moves.map(function(move){
-      var leagueChange=move.fromLeague!==move.toLeague?" · "+esc(leagueName(move.fromLeague))+" → "+esc(leagueName(move.toLeague)):" · "+esc(leagueName(move.toLeague));
-      return '<span class="move"><b>'+esc(move.fromClub)+" → "+esc(move.toClub)+"</b>"+leagueChange+" · "+move.age.toFixed(1)+" anos · "+esc(move.date)+"</span>";
-    }).join(""):'<span class="move">Um único contexto de clube e liga na janela observada.</span>';
-    var usedDecisions=history.filter(function(row){return row.minutes>0;}).length;
-    var unusedDecisions=history.length-usedDecisions;
-    var firstWatch=history.find(function(row){return row.watchNumber;});
-    var watchSummary=firstWatch?"W"+firstWatch.watchNumber+" aos "+fmt.format(firstWatch.cumulativeMinutes)+" min":"sem watch";
-    els.profile.innerHTML=
-      '<div class="profile-head"><div><h3>'+esc(player.name)+'</h3><p class="profile-meta">'+esc(positionName(player.position))+" · "+esc(player.club)+" · ID "+esc(player.id)+'</p><p class="profile-context">maior sinal: '+esc(leagueName(player.signalLeague))+" · "+esc(player.signalClub)+" · "+player.signalAge.toFixed(2)+" anos · "+esc(player.signalDate)+'</p></div><div class="signal-score"><strong>'+player.score.toFixed(1)+'</strong><span>percentil do maior sinal</span></div></div>'+
-      '<div class="metrics"><div class="metric"><strong>'+fmt.format(player.minutes)+'</strong><span>minutos acumulados</span></div><div class="metric"><strong>'+fmt.format(history.length)+'</strong><span>decisões observadas</span></div><div class="metric"><strong>'+fmt.format(usedDecisions)+'</strong><span>decisões com minutos</span></div><div class="metric"><strong>'+fmt.format(unusedDecisions)+'</strong><span>decisões sem minutos</span></div></div>'+
-      '<div class="selection-summary"><span><strong>Disponibilidade no modelo.</strong> A trajetória contém apenas decisões de seleção observadas. O jogador recebeu minutos em '+fmt.format(usedDecisions)+' de '+fmt.format(history.length)+' decisões; lesão ou ausência declarada fica fora da linha, não entra como zero.</span><code>'+esc(watchSummary)+'</code></div>'+
-      '<div class="trajectory-head"><div><h3>Evolução do sinal de oportunidade</h3><p id="trajectoryModeNote">'+(TRAJECTORY_MODE==="cumulative"?"linha: minutos acumulados · barras: minutos por decisão":"linha: sinal EWMA · barras: minutos por decisão")+'</p></div><div class="trajectory-actions"><span class="trajectory-period">'+esc(history[0]?history[0].date:"n/d")+" — "+esc(history.length?history[history.length-1].date:"n/d")+'</span><div class="view-toggle" role="group" aria-label="Visualização da trajetória"><button type="button" data-trajectory-mode="signal" class="'+(TRAJECTORY_MODE==="signal"?"active":"")+'" aria-pressed="'+(TRAJECTORY_MODE==="signal")+'">Sinal EWMA</button><button type="button" data-trajectory-mode="cumulative" class="'+(TRAJECTORY_MODE==="cumulative"?"active":"")+'" aria-pressed="'+(TRAJECTORY_MODE==="cumulative")+'">Minutos acumulados</button></div></div></div>'+
-      '<div class="trajectory-wrap" id="trajectoryWrap"><svg id="trajectory" viewBox="0 0 1000 430" preserveAspectRatio="none" role="img" aria-label="Trajetória longitudinal de '+esc(player.name)+'"></svg><div class="tooltip" id="trajectoryTip"></div></div>'+
-      '<div class="moves">'+moveHtml+"</div>";
-    Array.prototype.forEach.call(els.profile.querySelectorAll("[data-trajectory-mode]"),function(button){
-      button.onclick=function(){
-        TRAJECTORY_MODE=button.dataset.trajectoryMode;
-        Array.prototype.forEach.call(els.profile.querySelectorAll("[data-trajectory-mode]"),function(item){
-          var active=item.dataset.trajectoryMode===TRAJECTORY_MODE;
-          item.classList.toggle("active",active);item.setAttribute("aria-pressed",active);
-        });
-        document.getElementById("trajectoryModeNote").textContent=TRAJECTORY_MODE==="cumulative"?"linha: minutos acumulados · barras: minutos por decisão":"linha: sinal EWMA · barras: minutos por decisão";
-        drawTrajectory(history);
-      };
-    });
-    drawTrajectory(history);
-  }
-
-  function drawTrajectory(rows){
-    var svg=document.getElementById("trajectory"),wrap=document.getElementById("trajectoryWrap"),tip=document.getElementById("trajectoryTip");
-    if(!svg||!rows.length)return;
-    var width=1000,height=430,pad={left:68,right:24,top:24,bottom:48};
-    var plotBottom=356;
-    var innerWidth=width-pad.left-pad.right,innerHeight=plotBottom-pad.top;
-    var values=rows.map(function(row){return TRAJECTORY_MODE==="cumulative"?row.cumulativeMinutes:row.monitorEwma;});
-    var yMin=TRAJECTORY_MODE==="cumulative"?0:Math.min(-1,Math.floor(Math.min.apply(null,values)*2)/2);
-    var yMax;
-    if(TRAJECTORY_MODE==="cumulative"){
-      var rough=Math.max(1,Math.max.apply(null,values)/4),power=Math.pow(10,Math.floor(Math.log10(rough))),ratio=rough/power;
-      var tickStep=(ratio<=1?1:ratio<=2?2:ratio<=5?5:10)*power;
-      yMax=Math.max(tickStep,Math.ceil(Math.max.apply(null,values)/tickStep)*tickStep);
-    }else{
-      yMax=Math.max(1,Math.ceil(Math.max.apply(null,values)*2)/2);
-    }
-    function x(index){return pad.left+(rows.length===1?.5:index/(rows.length-1))*innerWidth;}
-    function y(value){return pad.top+(yMax-value)/(yMax-yMin)*innerHeight;}
-    var html="";
-    var step=TRAJECTORY_MODE==="cumulative"?tickStep:((yMax-yMin)>4?1:.5);
-    for(var tick=Math.ceil(yMin/step)*step;tick<=yMax+.001;tick+=step){
-      html+='<line x1="'+pad.left+'" y1="'+y(tick)+'" x2="'+(width-pad.right)+'" y2="'+y(tick)+'" stroke="'+(Math.abs(tick)<.001?CHART.zero:CHART.grid)+'" stroke-width="1"/>';
-      html+='<text x="'+(pad.left-10)+'" y="'+(y(tick)+3)+'" text-anchor="end" font-size="10" fill="'+CHART.axis+'" font-family="DM Mono,monospace">'+(TRAJECTORY_MODE==="cumulative"?fmt.format(tick):tick.toFixed(tick%1===0?0:1))+"</text>";
-    }
-    rows.forEach(function(row,index){
-      var barHeight=Math.min(74,row.minutes/90*74);
-      var barWidth=Math.max(1.2,innerWidth/rows.length*.58);
-      html+='<rect x="'+(x(index)-barWidth/2)+'" y="'+(plotBottom-barHeight)+'" width="'+barWidth+'" height="'+barHeight+'" fill="'+clubColor(row.club)+'" opacity=".22"/>';
-      if(index&&(row.league!==rows[index-1].league||row.club!==rows[index-1].club)){
-        html+='<line x1="'+x(index)+'" y1="'+pad.top+'" x2="'+x(index)+'" y2="'+plotBottom+'" stroke="'+clubColor(row.club)+'" stroke-width="1.2" stroke-dasharray="4 4"/>';
-      }
-    });
-    var starts=[0];
-    for(var startIndex=1;startIndex<rows.length;startIndex++){
-      if(rows[startIndex].league!==rows[startIndex-1].league||rows[startIndex].club!==rows[startIndex-1].club)starts.push(startIndex);
-    }
-    if(TRAJECTORY_MODE==="cumulative"){
-      var areaPath="";
-      rows.forEach(function(row,index){areaPath+=(index?"L":"M")+x(index).toFixed(1)+","+y(values[index]).toFixed(1)+" ";});
-      html+='<path d="'+areaPath+' L'+x(rows.length-1).toFixed(1)+','+plotBottom+' L'+x(0).toFixed(1)+','+plotBottom+' Z" fill="'+CHART.accent+'" opacity=".08"/>';
-    }
-    starts.forEach(function(start,segmentIndex){
-      var end=segmentIndex+1<starts.length?starts[segmentIndex+1]:rows.length;
-      var path="";
-      var pathStart=start===0?0:start-1;
-      for(var pointIndex=pathStart;pointIndex<end;pointIndex++)path+=(pointIndex===pathStart?"M":"L")+x(pointIndex).toFixed(1)+","+y(values[pointIndex]).toFixed(1)+" ";
-      html+='<path d="'+path+'" fill="none" stroke="'+clubColor(rows[start].club)+'" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>';
-    });
-    rows.forEach(function(row,index){
-      html+='<circle cx="'+x(index)+'" cy="'+y(values[index])+'" r="'+(index===rows.length-1?4:1.8)+'" fill="'+clubColor(row.club)+'"/>';
-    });
-    rows.forEach(function(row,index){
-      if(row.watchNumber){
-        html+='<line x1="'+x(index)+'" y1="'+pad.top+'" x2="'+x(index)+'" y2="'+plotBottom+'" stroke="'+CHART.accent+'" stroke-width="1.2" stroke-dasharray="3 4"/>';
-        html+='<text x="'+(x(index)+4)+'" y="'+(pad.top+12)+'" font-size="10" fill="'+CHART.accent+'" font-family="DM Mono,monospace">W'+row.watchNumber+'</text>';
-        html+='<circle cx="'+x(index)+'" cy="'+y(values[index])+'" r="5" fill="'+CHART.accent+'" stroke="'+CHART.selected+'" stroke-width="1.5"/>';
-      }
-    });
-    html+='<text x="14" y="'+(pad.top+innerHeight/2)+'" transform="rotate(-90 14 '+(pad.top+innerHeight/2)+')" text-anchor="middle" font-size="9" fill="'+CHART.axis+'" font-family="DM Mono,monospace">'+(TRAJECTORY_MODE==="cumulative"?"MINUTOS ACUMULADOS":"EWMA PADRONIZADA")+'</text>';
-    html+='<text x="'+pad.left+'" y="'+(height-17)+'" font-size="10" fill="'+CHART.axis+'" font-family="DM Mono,monospace">'+esc(rows[0].date)+' · '+rows[0].age.toFixed(1)+' anos</text>';
-    html+='<text x="'+(width-pad.right)+'" y="'+(height-17)+'" text-anchor="end" font-size="10" fill="'+CHART.axis+'" font-family="DM Mono,monospace">'+esc(rows[rows.length-1].date)+' · '+rows[rows.length-1].age.toFixed(1)+" anos</text>";
-    svg.innerHTML=html;
-    svg.onpointermove=function(event){
-      var rect=svg.getBoundingClientRect();
-      var px=(event.clientX-rect.left)/rect.width*width;
-      var index=Math.max(0,Math.min(rows.length-1,Math.round((px-pad.left)/innerWidth*(rows.length-1))));
-      var row=rows[index];
-      var eventText=row.watchNumber?"<br>watch "+row.watchNumber:"";
-      var decisionStatus=row.minutes>0?"decisão observada · recebeu minutos":"decisão observada · sem minutos";
-      tip.innerHTML="<b>"+esc(row.date)+" · "+row.age.toFixed(2)+" anos</b><br>"+esc(leagueName(row.league))+" · "+esc(row.club)+"<br>"+decisionStatus+"<br>"+row.minutes+" min na decisão · "+fmt.format(row.cumulativeMinutes)+" min acumulados<br>EWMA "+row.monitorEwma.toFixed(2)+" · percentil da rodada "+Math.round(row.percentile*100)+eventText;
-      placeTooltip(tip,wrap,event);
-    };
-    svg.onpointerleave=function(){tip.style.display="none";};
-  }
-
-  function renderSearch(){
-    var query=fold(els.search.value.trim());
-    if(!query){els.results.classList.remove("open");els.results.innerHTML="";return;}
-    var matches=PLAYERS.filter(function(player){
-      return player.score!=null&&fold(player.name+" "+player.club).indexOf(query)!==-1;
-    }).sort(function(a,b){return b.score-a.score;}).slice(0,10);
-    els.results.innerHTML=matches.length?matches.map(function(player){
-      return '<button class="search-row" data-id="'+esc(player.id)+'"><span><strong>'+esc(player.name)+'</strong><span>'+esc(positionName(player.position))+" · "+esc(player.club)+" · "+esc(leagueName(player.signalLeague))+'</span></span><code>p'+player.score.toFixed(1)+"</code></button>";
-    }).join(""):'<div class="search-row"><span>Nenhum jogador encontrado.</span></div>';
-    els.results.classList.add("open");
-    Array.prototype.forEach.call(els.results.querySelectorAll("[data-id]"),function(button){
-      button.onclick=function(){selectPlayer(PLAYERS.find(function(player){return player.id===button.dataset.id;}),false);};
-    });
-  }
-
-  function populateCohortSeasons(){
-    var league=els.cohortLeague.value;
-    var previous=els.cohortSeason.value;
-    var seasons={};
-    WATCHES_DATA.forEach(function(watch){
-      if((league&&watch.league!==league)||!watch.seasonLabel)return;
-      var current=seasons[watch.seasonLabel];
-      if(!current||watch.seasonStart>current.start){
-        seasons[watch.seasonLabel]={label:watch.seasonLabel,start:watch.seasonStart};
-      }
-    });
-    var ordered=Object.keys(seasons).map(function(key){return seasons[key];}).sort(function(a,b){
-      return b.start.localeCompare(a.start)||b.label.localeCompare(a.label);
-    });
-    els.cohortSeason.innerHTML='<option value="">Todas as temporadas</option>'+ordered.map(function(row){
-      return '<option value="'+esc(row.label)+'">'+esc(row.label)+'</option>';
-    }).join("");
-    if(ordered.some(function(row){return row.label===previous;}))els.cohortSeason.value=previous;
-    applyCohortFilters();
-  }
-
-  function applyCohortFilters(){
-    var league=els.cohortLeague.value;
-    var season=els.cohortSeason.value;
-    var position=els.cohortPosition.value;
-    COHORT_FILTERED=WATCHES_DATA.filter(function(watch){
-      var player=PLAYER_BY_ID[watch.playerId];
-      return player&&(!league||watch.league===league)&&
-        (!season||watch.seasonLabel===season)&&(!position||player.position===position);
-    });
-    drawCohortPlot();
-  }
-
-  function drawCohortPlot(){
-    if(!DATA)return;
-    var canvas=els.cohortCanvas;
-    var rect=canvas.getBoundingClientRect();
-    var dpr=Math.min(window.devicePixelRatio||1,2);
-    var width=Math.max(1,rect.width),height=Math.max(1,rect.height);
-    canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);
-    var ctx=canvas.getContext("2d");
-    ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,width,height);
-    var pad={left:72,right:24,top:24,bottom:54};
-    var plotWidth=width-pad.left-pad.right,plotHeight=height-pad.top-pad.bottom;
-    var values=COHORT_FILTERED.map(function(watch){return watch.minutes;}).filter(Number.isFinite);
-    var maxMinutes=Math.max(90,Math.max.apply(null,values.length?values:[90]));
-    var logMax=Math.log1p(maxMinutes*1.05);
-    function x(value){return pad.left+(value-DATA.meta.minAge)/(DATA.meta.maxAge+1-DATA.meta.minAge)*plotWidth;}
-    function y(value){return pad.top+(1-Math.log1p(Math.max(0,value))/logMax)*plotHeight;}
-
-    ctx.font="10px DM Mono, monospace";
-    ctx.fillStyle=CHART.axis;
-    for(var age=DATA.meta.minAge;age<=DATA.meta.maxAge+1;age++){
-      var gx=x(age);
-      ctx.strokeStyle=CHART.grid;ctx.lineWidth=1;
-      ctx.beginPath();ctx.moveTo(gx,pad.top);ctx.lineTo(gx,height-pad.bottom);ctx.stroke();
-      ctx.textAlign=age===DATA.meta.minAge?"left":(age===DATA.meta.maxAge+1?"right":"center");
-      ctx.fillText(age+" anos",gx,height-20);
-    }
-    [0,90,180,360,720,1440,2880,5760,10000].filter(function(value){return value<=maxMinutes*1.05;}).forEach(function(value){
-      var gy=y(value);
-      ctx.strokeStyle=CHART.grid;ctx.beginPath();ctx.moveTo(pad.left,gy);ctx.lineTo(width-pad.right,gy);ctx.stroke();
-      ctx.fillStyle=CHART.axis;ctx.textAlign="right";ctx.fillText(fmt.format(value),pad.left-10,gy+3);
-    });
-    ctx.fillStyle=CHART.axis;ctx.textAlign="center";
-    ctx.fillText("IDADE NO WATCH",pad.left+plotWidth/2,height-4);
-    ctx.save();ctx.translate(14,pad.top+plotHeight/2);ctx.rotate(-Math.PI/2);
-    ctx.fillText("MINUTOS ATÉ O WATCH · ESCALA LOG",0,0);ctx.restore();
-
-    COHORT_POINTS=[];
-    COHORT_FILTERED.forEach(function(watch){
-      var player=PLAYER_BY_ID[watch.playerId];
-      var px=x(watch.age),py=y(watch.minutes);
-      if(!Number.isFinite(px)||!Number.isFinite(py))return;
-      COHORT_POINTS.push({x:px,y:py,player:player,watch:watch});
-      ctx.globalAlpha=ACTIVE&&ACTIVE.id===player.id?1:.5;
-      ctx.fillStyle=CHART.accent;
-      ctx.beginPath();ctx.arc(px,py,ACTIVE&&ACTIVE.id===player.id?5.4:2.5,0,Math.PI*2);ctx.fill();
-      if(ACTIVE&&ACTIVE.id===player.id){
-        ctx.globalAlpha=1;ctx.strokeStyle=CHART.selected;ctx.lineWidth=1.4;ctx.stroke();
-      }
-    });
-    ctx.globalAlpha=1;
-  }
-
-  function nearestCohortPoint(event){
-    var rect=els.cohortCanvas.getBoundingClientRect();
-    var x=event.clientX-rect.left,y=event.clientY-rect.top,best=null,bestDistance=100;
-    COHORT_POINTS.forEach(function(point){
-      var distance=(point.x-x)*(point.x-x)+(point.y-y)*(point.y-y);
-      if(distance<bestDistance){bestDistance=distance;best=point;}
-    });
-    return best;
-  }
-
-  els.cohortCanvas.addEventListener("pointermove",function(event){
-    var point=nearestCohortPoint(event);
-    if(!point){els.cohortTip.style.display="none";return;}
-    var player=point.player,watch=point.watch;
-    els.cohortTip.innerHTML="<b>"+esc(player.name)+" · primeiro watch</b><br>"+esc(leagueName(watch.league))+" · "+esc(watch.seasonLabel||"temporada n/d")+" · "+esc(watch.club)+"<br>"+watch.age.toFixed(2)+" anos · "+fmt.format(watch.minutes)+" min em "+fmt.format(watch.rounds)+" decisões<br>"+watch.qualifyingObservations+" observações recentes com resíduo ≥ +0,75";
-    placeTooltip(els.cohortTip,els.cohortWrap,event);
-  });
-  els.cohortCanvas.addEventListener("pointerleave",function(){els.cohortTip.style.display="none";});
-  els.cohortCanvas.addEventListener("click",function(event){
-    var point=nearestCohortPoint(event);
-    if(point)selectPlayer(point.player,true);
-  });
-
-  function applyUsageFilters(){
-    var league=els.monitorLeague.value;
-    var position=els.monitorPosition.value;
-    var state=els.monitorState.value;
-    var base=PLAYERS.filter(function(player){
-      return player.usagePlotEligible&&player.watchCount>0&&(!league||player.league===league)&&
-        (!position||player.position===position);
-    });
-    USAGE_FILTERED=state==="growth"
-      ?base.filter(function(player){return player.ewmaChange>0;})
-      :(state==="decline"
-        ?base.filter(function(player){return player.ewmaChange<0;})
-        :(state==="unused"?base.filter(isRecentlyUnused):base));
-    USAGE_FILTERED.sort(function(a,b){
-      return Math.abs(a.ewmaChange)-Math.abs(b.ewmaChange);
-    });
-    drawUsagePlot();
-  }
-
-  function isRecentlyUnused(player){
-    return player.recent5Minutes===0;
-  }
-
-  function drawUsagePlot(){
-    if(!DATA)return;
-    var canvas=els.monitorCanvas;
-    var rect=canvas.getBoundingClientRect();
-    var dpr=Math.min(window.devicePixelRatio||1,2);
-    var width=Math.max(1,rect.width),height=Math.max(1,rect.height);
-    canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);
-    var ctx=canvas.getContext("2d");
-    ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,width,height);
-    var pad={left:72,right:24,top:25,bottom:58};
-    var plotWidth=width-pad.left-pad.right,plotHeight=height-pad.top-pad.bottom;
-    if(!USAGE_FILTERED.length){
-      ctx.fillStyle=CHART.axis;ctx.font="12px Inter, sans-serif";ctx.textAlign="center";
-      ctx.fillText("Nenhum jogador encontrado para estes filtros.",width/2,height/2);USAGE_POINTS=[];
-      return;
-    }
-    var values=PLAYERS.filter(function(player){return player.usagePlotEligible;})
-      .map(function(player){return player.peakEwma;}).filter(Number.isFinite);
-    var xMin=Math.min(0,Math.floor(Math.min.apply(null,values)*2)/2);
-    var xMax=Math.max(1,Math.ceil(Math.max.apply(null,values)*2)/2);
-    if(xMax===xMin)xMax=xMin+1;
-    var deltas=PLAYERS.filter(function(player){return player.usagePlotEligible;})
-      .map(function(player){return player.ewmaChange;}).filter(Number.isFinite);
-    var yMin=Math.min(-1,Math.floor(Math.min.apply(null,deltas)*2)/2);
-    var yMax=Math.max(1,Math.ceil(Math.max.apply(null,deltas)*2)/2);
-    function x(value){return pad.left+(value-xMin)/(xMax-xMin)*plotWidth;}
-    function y(value){return pad.top+(yMax-value)/(yMax-yMin)*plotHeight;}
-
-    ctx.font="10px DM Mono, monospace";ctx.lineWidth=1;
-    var xStep=(xMax-xMin)>4?1:.5;
-    for(var tick=Math.ceil(xMin/xStep)*xStep;tick<=xMax+.001;tick+=xStep){
-      var gx=x(tick);ctx.strokeStyle=Math.abs(tick)<.001?CHART.zero:CHART.grid;
-      ctx.beginPath();ctx.moveTo(gx,pad.top);ctx.lineTo(gx,height-pad.bottom);ctx.stroke();
-      ctx.fillStyle=CHART.axis;ctx.textAlign=tick===xMin?"left":(tick+xStep>xMax?"right":"center");
-      ctx.fillText(tick.toFixed(tick%1===0?0:1),gx,height-25);
-    }
-    var yStep=(yMax-yMin)>5?1:.5;
-    for(var yTick=Math.ceil(yMin/yStep)*yStep;yTick<=yMax+.001;yTick+=yStep){
-      var gy=y(yTick);ctx.strokeStyle=Math.abs(yTick)<.001?CHART.zero:CHART.grid;
-      ctx.beginPath();ctx.moveTo(pad.left,gy);ctx.lineTo(width-pad.right,gy);ctx.stroke();
-      ctx.fillStyle=CHART.axis;ctx.textAlign="right";
-      ctx.fillText((yTick>0?"+":"")+yTick.toFixed(yTick%1===0?0:1),pad.left-10,gy+3);
-    }
-    ctx.fillStyle=CHART.axis;ctx.textAlign="center";
-    ctx.fillText("MAIOR EWMA DA CARREIRA OBSERVADA",pad.left+plotWidth/2,height-5);
-    ctx.save();ctx.translate(15,pad.top+plotHeight/2);ctx.rotate(-Math.PI/2);
-    ctx.fillText("DELTA EWMA NAS 5 DECISÕES RECENTES",0,0);ctx.restore();
-    ctx.textAlign="right";ctx.globalAlpha=.78;
-    ctx.fillStyle=CHART.growth;ctx.fillText("EWMA EM CRESCIMENTO",width-pad.right-8,pad.top+14);
-    ctx.fillStyle=CHART.decline;ctx.fillText("EWMA EM QUEDA",width-pad.right-8,height-pad.bottom-10);
-    ctx.globalAlpha=1;
-
-    USAGE_POINTS=[];
-    USAGE_FILTERED.forEach(function(player){
-      var delta=player.ewmaChange;
-      var px=x(player.peakEwma),py=y(delta);
-      if(!Number.isFinite(px)||!Number.isFinite(py))return;
-      var selected=ACTIVE&&ACTIVE.id===player.id;
-      var unusedShare=1-Math.max(0,Math.min(1,player.recentUsage||0));
-      var strength=delta>=0?Math.min(1,delta/yMax):Math.min(1,delta/yMin);
-      var radius=2.1+unusedShare*3.4;
-      ctx.globalAlpha=selected?1:.24+strength*.42+unusedShare*.2;
-      ctx.fillStyle=delta>=0?CHART.growth:CHART.decline;
-      ctx.beginPath();ctx.arc(px,py,selected?6:radius,0,Math.PI*2);ctx.fill();
-      if(selected){ctx.globalAlpha=1;ctx.strokeStyle=CHART.selected;ctx.lineWidth=1.4;ctx.stroke();}
-      USAGE_POINTS.push({x:px,y:py,player:player});
-    });
-    ctx.globalAlpha=1;
-  }
-
-  function nearestUsagePoint(event){
-    var rect=els.monitorCanvas.getBoundingClientRect();
-    var px=event.clientX-rect.left,py=event.clientY-rect.top,best=null,bestDistance=144;
-    USAGE_POINTS.forEach(function(point){
-      var distance=(point.x-px)*(point.x-px)+(point.y-py)*(point.y-py);
-      if(distance<bestDistance){best=point;bestDistance=distance;}
-    });
-    return best;
-  }
-
-  els.monitorCanvas.addEventListener("pointermove",function(event){
-    var point=nearestUsagePoint(event);
-    if(!point){els.monitorTip.style.display="none";return;}
-    var player=point.player;
-    var delta=(player.ewmaChange>0?"+":"")+player.ewmaChange.toFixed(2);
-    var movement=player.ewmaChange>=0?"EWMA em crescimento":"EWMA em queda";
-    els.monitorTip.innerHTML="<b>"+esc(player.name)+" · "+movement+"</b><br>"+esc(player.league)+" · "+esc(player.club)+" · "+player.ageAtCutoff.toFixed(1)+" anos<br>maior EWMA: "+player.peakEwma.toFixed(2)+" · p"+player.score.toFixed(1)+"<br>EWMA antes da janela "+player.previousEwma.toFixed(2)+" · atual "+player.currentEwma.toFixed(2)+" · delta "+delta+"<br>pico: "+esc(player.signalDate)+" · "+player.signalAge.toFixed(1)+" anos · "+esc(player.signalLeague)+" · "+esc(player.signalClub)+"<br>5 recentes: "+fmt.format(player.recent5Minutes)+" de "+fmt.format(player.recent5Available)+" min · "+Math.round(player.recentUsage*100)+"%";
-    placeTooltip(els.monitorTip,els.monitorWrap,event);
-  });
-  els.monitorCanvas.addEventListener("pointerleave",function(){els.monitorTip.style.display="none";});
-  els.monitorCanvas.addEventListener("click",function(event){
-    var point=nearestUsagePoint(event);if(point)selectPlayer(point.player,true);
-  });
-
-  els.league.addEventListener("change",applyFilters);
-  els.position.addEventListener("change",applyFilters);
-  els.score.addEventListener("change",applyFilters);
-  els.leaderLeague.addEventListener("change",populateLeaderSeasons);
-  els.leaderSeason.addEventListener("change",applySeasonFilters);
-  els.leaderPosition.addEventListener("change",applySeasonFilters);
-  els.cohortLeague.addEventListener("change",populateCohortSeasons);
-  els.cohortSeason.addEventListener("change",applyCohortFilters);
-  els.cohortPosition.addEventListener("change",applyCohortFilters);
-  els.monitorLeague.addEventListener("change",applyUsageFilters);
-  els.monitorPosition.addEventListener("change",applyUsageFilters);
-  els.monitorState.addEventListener("change",applyUsageFilters);
-  els.search.addEventListener("input",renderSearch);
-  els.search.addEventListener("keydown",function(event){
-    if(event.key==="Enter"){
-      var first=els.results.querySelector("[data-id]");
-      if(first){event.preventDefault();first.click();}
-    }
-  });
-  document.addEventListener("click",function(event){
-    if(!event.target.closest(".player-find"))els.results.classList.remove("open");
-  });
-  var resizeTimer;
-  window.addEventListener("resize",function(){
-    clearTimeout(resizeTimer);
-    resizeTimer=setTimeout(function(){drawDistribution();drawSeasonPlot();drawCohortPlot();drawUsagePlot();if(ACTIVE)renderProfile(ACTIVE);},120);
-  });
-})();
-</script>
+  <script src="html/app.js"></script>
 </body>
 </html>
