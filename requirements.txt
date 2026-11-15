@@ -1,8 +1,8 @@
-beautifulsoup4
-ipykernel
-matplotlib
-nbformat>=4.2
-numpy
-pandas
-pyarrow
-requests
+beautifulsoup4>=4.15,<5
+ipykernel>=7.4,<8
+matplotlib>=3.11,<4
+nbformat>=5.11,<6
+numpy>=2.5,<3
+pandas>=3.0,<4
+pyarrow>=26,<27
+requests>=2.34,<3
