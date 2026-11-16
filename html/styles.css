@@ -45,7 +45,7 @@ button { cursor: pointer; }
 ::selection { background: var(--accent); color: var(--sheet); }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
-.shell { width: min(1240px, calc(100% - 56px)); margin-inline: auto; }
+.shell { width: min(1240px, calc(100% - clamp(32px, 8vw, 160px))); margin-inline: auto; }
 .label {
   font: 500 10px/1.4 var(--mono);
   letter-spacing: .12em;
@@ -67,7 +67,10 @@ button { cursor: pointer; }
 
 /* 3. Opening */
 .hero {
-  padding: clamp(72px, 10vw, 136px) 0 clamp(72px, 9vw, 120px);
+  display: grid;
+  align-items: center;
+  min-height: 100svh;
+  padding: clamp(56px, 8vw, 104px) 0;
   border-bottom: 1px solid var(--ink);
 }
 .hero-grid {
