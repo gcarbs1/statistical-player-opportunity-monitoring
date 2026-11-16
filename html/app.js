@@ -597,7 +597,6 @@
         <div class="metric"><strong>${integer.format(played)}</strong><span class="label">decisions with minutes</span></div>
         <div class="metric"><strong>${watch ? "Age " + decimal(watch.age, 1) : "—"}</strong><span class="label">${watch ? `early watch · ${integer.format(watch.cumulative)} min` : "no early watch"}</span></div>
       </div>
-      <p class="profile-note"><strong>Observed decisions only.</strong> The player got minutes in ${integer.format(played)} of ${integer.format(rows.length)} decisions. Injuries and declared absences are left out of the line and do not count as zero.</p>
       <div class="trajectory-head">
         <div>
           <h4>${state.trajectoryMode === "signal" ? "Opportunity signal" : "Cumulative minutes"} · ${first} to ${last}</h4>

@@ -365,16 +365,6 @@ button { cursor: pointer; }
 .metric + .metric { border-left: 1px solid var(--rule); }
 .metric strong { display: block; font: 700 26px/1 var(--display); letter-spacing: -.035em; font-variant-numeric: tabular-nums; }
 .metric .label { display: block; margin-top: 8px; }
-.profile-note {
-  margin-top: 14px;
-  padding: 12px 16px;
-  border-left: 3px solid var(--accent);
-  background: var(--accent-soft);
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.6;
-}
-.profile-note strong { color: var(--ink); }
 .trajectory-head {
   display: flex;
   justify-content: space-between;
